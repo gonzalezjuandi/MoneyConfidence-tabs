@@ -1,4 +1,4 @@
-<div class="posicion-global-container">
+<div class="posicion-global-container" data-pg-balance-ui="tabs">
   <!-- Main App Container -->
   <div class="app-wrapper" *ngIf="view === 'dashboard'">
     
@@ -22,7 +22,8 @@
 
     <!-- Saldo / próximos: pestañas (referencia) + contenido -->
     <div class="px-6 pt-2 pb-6 text-center">
-      <div class="pg-balance-stack">
+      <!-- balance-swipe-inner: bloque hero saldo / próximos (pestañas; sustituye swipe + píldora) -->
+      <div class="balance-swipe-inner pg-balance-stack">
         <div class="pg-balance-tabs" role="tablist" aria-label="Resumen de cuenta">
           <button
             type="button"

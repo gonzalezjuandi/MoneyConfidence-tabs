@@ -1,16 +1,18 @@
-// Entry point saldo / próximos pagos (pestañas)
+// Entry point saldo / próximos pagos (pestañas) — V1/V2 comparten componente
+.balance-swipe-inner.pg-balance-stack,
 .pg-balance-stack {
   display: flex;
   flex-direction: column;
   align-items: center;
   text-align: center;
+  width: 100%;
 }
 
 /* —— Pestañas saldo / próximos (referencia Posición global) —— */
 .pg-balance-tabs {
   display: flex;
   width: 100%;
-  max-width: 22rem;
+  max-width: 100%;
   margin: 0 auto 0.75rem;
   border-bottom: 1px solid #e5e7eb;
   gap: 0;
@@ -56,10 +58,10 @@
 .pg-balance-tab--active::after {
   content: '';
   position: absolute;
-  left: 12%;
-  right: 12%;
+  left: 8%;
+  right: 8%;
   bottom: 0;
-  height: 3px;
+  height: 4px;
   border-radius: 2px 2px 0 0;
   background: #006dff;
 }
@@ -175,198 +177,6 @@
   outline: none;
   border-radius: 0.25rem;
   box-shadow: 0 0 0 2px #ffffff, 0 0 0 4px rgba(0, 109, 255, 0.45);
-}
-
-.balance-entry-pill {
-  margin-top: 0.5rem;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 0.5rem;
-  /* Mismo padding en ambos estados; columnas fijas evitan saltos de tamaño */
-  padding: 0.25rem 0.25rem;
-  min-height: 2.875rem;
-  height: 2.875rem;
-  box-sizing: border-box;
-  width: 100%;
-  max-width: 340px;
-  background: #ffffff;
-  border: 1px solid #e5e7eb;
-  border-radius: 9999px;
-  box-shadow: 0 1px 3px rgba(15, 23, 42, 0.06);
-  margin-left: auto;
-  margin-right: auto;
-  cursor: pointer;
-  outline: none;
-}
-
-/* Focus interno: no cambia el tamaño del contenedor respecto al estado normal */
-.balance-entry-pill:focus-visible {
-  box-shadow: inset 0 0 0 2px #006dff, 0 1px 3px rgba(15, 23, 42, 0.06);
-}
-
-.balance-entry-pill--total {
-  background: #ffffff;
-  border-color: #e5e7eb;
-  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.06);
-}
-
-/* Botón nativo: mismo aspecto que la píldora anterior */
-button.balance-entry-pill {
-  font: inherit;
-  color: inherit;
-  appearance: none;
-  -webkit-appearance: none;
-}
-
-/* Vista saldo: iconos de comercios + texto (sin carril de flecha) */
-.balance-entry-pill--static.balance-entry-pill--total {
-  justify-content: flex-start;
-  gap: 0.5rem;
-  padding: 0.2rem 0.65rem 0.2rem 0.2rem;
-}
-
-.balance-pill-merchants {
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  flex-shrink: 0;
-  padding-left: 0.15rem;
-}
-
-.balance-pill-merchant {
-  position: relative;
-  flex-shrink: 0;
-  margin-left: -0.625rem;
-  border-radius: 50%;
-  border: 2px solid #ffffff;
-  box-shadow: 0 0 0 1px rgba(15, 23, 42, 0.08);
-  background: #fff;
-}
-
-.balance-pill-merchant:first-child {
-  margin-left: 0;
-}
-
-.balance-pill-body--total {
-  flex: 1 1 0;
-  min-width: 0;
-}
-
-.balance-pill-text--with-amount {
-  font-weight: 400;
-  color: #6b7280;
-}
-
-.balance-pill-amount {
-  font-weight: 600;
-  color: #374151;
-}
-
-/* Flecha azul tipo referencia (indicador de navegación, no arrastre) */
-.balance-pill-next {
-  flex-shrink: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 1.75rem;
-  margin-left: 0.125rem;
-  pointer-events: none;
-}
-
-.balance-pill-next-icon {
-  width: 1.25rem;
-  height: 1.25rem;
-  color: #006dff;
-  stroke-width: 2.25;
-}
-
-.balance-pill-next-icon svg {
-  width: 100%;
-  height: 100%;
-}
-
-/* Carril fijo 64px: la flecha queda alineada al borde del contenedor; overflow recorta el drag */
-.balance-pill-edge {
-  flex: 0 0 64px;
-  width: 64px;
-  min-width: 64px;
-  max-width: 64px;
-  height: 31px;
-  display: flex;
-  align-items: center;
-  overflow: hidden;
-  align-self: center;
-}
-
-.balance-pill-edge--lead {
-  justify-content: flex-start;
-}
-
-.balance-pill-edge--trail {
-  justify-content: flex-end;
-}
-
-.balance-pill-body {
-  flex: 1 1 0;
-  min-width: 0;
-  display: flex;
-  align-items: center;
-  justify-content: flex-start;
-}
-
-/* Capsula 64×31 px, oscura, chevron blanco; mismo tamaño en ambas vistas */
-.balance-pill-chevron {
-  flex-shrink: 0;
-  width: 64px;
-  height: 31px;
-  border-radius: 9999px;
-  background: #1f2937;
-  border: none;
-  box-shadow: none;
-  color: #ffffff;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  pointer-events: none;
-  transition: transform 0.28s cubic-bezier(0.22, 1, 0.36, 1);
-  will-change: transform;
-}
-
-.balance-pill-chevron-icon {
-  display: block;
-  flex-shrink: 0;
-  width: 1.375rem;
-  height: 1.375rem;
-  color: #ffffff;
-}
-
-.balance-pill-chevron .balance-pill-chevron-icon svg,
-.balance-pill-chevron-icon svg {
-  width: 100%;
-  height: 100%;
-}
-
-.balance-pill-chevron--dragging {
-  transition: none;
-}
-
-.balance-pill-text {
-  display: block;
-  width: 100%;
-  min-width: 0;
-  text-align: left;
-  font-size: 0.8125rem;
-  font-weight: 400;
-  color: #6b7280;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-.balance-pill-text--muted {
-  font-weight: 400;
-  color: #6b7280;
 }
 
 // Clases personalizadas para el color primario del sistema de diseño

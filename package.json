@@ -5,6 +5,7 @@
   "scripts": {
     "ng": "ng",
     "start": "ng serve",
+    "start:clean": "rm -rf .angular/cache && ng serve",
     "dev": "ng serve",
     "start:v1": "ng serve",
     "start:v2": "ng serve --configuration=v2",

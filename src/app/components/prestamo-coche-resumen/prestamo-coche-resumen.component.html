@@ -1,0 +1,440 @@
+<div class="prestamo-coche-resumen-container">
+  <div class="prestamo-coche-resumen-wrapper">
+    <!-- Header -->
+    <header class="resumen-header">
+      <button class="header-back-btn" (click)="onBack()">
+        <i data-lucide="arrow-left" class="w-5 h-5 stroke-[1.5]"></i>
+      </button>
+      <h1 class="header-title">Préstamo Preconcedido</h1>
+      <div class="header-actions">
+        <button class="header-icon-btn" aria-label="Chat" (click)="onOpenFaq()">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" style="width: 1.5rem; height: 1.5rem;">
+            <path fill-rule="evenodd" clip-rule="evenodd" d="M5.97394 16.3997L4.71817 19.2968L8.10519 18.4877L8.64737 18.7931C9.78922 19.4362 11.1073 19.8036 12.516 19.8036C16.8775 19.8036 20.4131 16.2679 20.4131 11.9064C20.4131 7.54492 16.8775 4.00924 12.516 4.00924C8.15447 4.00924 4.61879 7.54492 4.61879 11.9064C4.61879 13.2914 4.97397 14.5887 5.597 15.7171L5.97394 16.3997ZM2 21.5776L4.20784 16.4841C3.45844 15.1269 3.03193 13.5665 3.03193 11.9064C3.03193 6.66853 7.27808 2.42238 12.516 2.42238C17.7539 2.42238 22 6.66853 22 11.9064C22 17.1443 17.7539 21.3904 12.516 21.3904C10.8275 21.3904 9.24202 20.9492 7.86866 20.1757L2 21.5776Z" fill="currentColor"/>
+            <path d="M15.3142 7.33122C16.1468 8.67695 15.6607 10.261 14.254 11.4516L13.8804 11.776C13.2113 12.3757 12.9958 12.6992 12.9666 13.0614L12.963 13.1529V13.8303H11.6081V13.1529C11.6081 12.1741 12.0641 11.5302 13.3787 10.4175C14.3226 9.61859 14.5923 8.73953 14.162 8.04401C13.7796 7.42575 12.4297 7.26492 11.1814 7.72963L10.9488 7.82413L10.3291 8.0977L9.78194 6.85822L10.4017 6.58466C12.2545 5.76678 14.4752 5.97501 15.3142 7.33122Z" fill="currentColor"/>
+            <path d="M11.2483 16.8772C11.2483 16.316 11.7032 15.861 12.2644 15.861C12.8256 15.861 13.2805 16.316 13.2805 16.8772C13.2805 17.4384 12.8256 17.8933 12.2644 17.8933C11.7032 17.8933 11.2483 17.4384 11.2483 16.8772Z" fill="currentColor"/>
+          </svg>
+        </button>
+        <button class="header-icon-btn" aria-label="Cerrar" (click)="onCloseRequest()">
+          <i data-lucide="x" class="w-5 h-5 stroke-[1.5]"></i>
+        </button>
+      </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="resumen-main">
+      <h2 class="resumen-title">Resumen de tu solicitud</h2>
+
+      <!-- Texto introductorio (solo si hay seguro) -->
+      <p class="resumen-intro-text" *ngIf="data.hasInsurance">
+        Tu solicitud incluye dos productos, ten en cuenta que la cuota del préstamo y la prima del seguro llegarán por separado.
+      </p>
+
+      <!-- Módulo Préstamo Preconcedido -->
+      <div class="resumen-module resumen-module-loan">
+        <h3 class="resumen-module-title">Préstamo Preconcedido</h3>
+        <div class="resumen-module-content">
+          <div class="resumen-item">
+            <span class="resumen-label">Importe solicitado</span>
+            <span class="resumen-value">{{ formattedAmount }} €</span>
+          </div>
+          <div class="resumen-item">
+            <span class="resumen-label">Cuota</span>
+            <span class="resumen-value">{{ formattedMonthlyPayment }} €/mes</span>
+          </div>
+          <div class="resumen-item">
+            <span class="resumen-label">Intereses</span>
+            <span class="resumen-value">{{ formattedTotalInterest }} €</span>
+          </div>
+          <div class="resumen-item">
+            <span class="resumen-label">Plazos</span>
+            <span class="resumen-value">{{ termYears }} años ({{ data.termMonths }} cuotas mensuales)</span>
+          </div>
+          <div class="resumen-item resumen-item-nested">
+            <span class="resumen-label-nested">TIN</span>
+            <span class="resumen-value-nested">{{ data.tin.toFixed(2) }} % anual</span>
+          </div>
+          <div class="resumen-item resumen-item-nested">
+            <span class="resumen-label-nested">TAE</span>
+            <span class="resumen-value-nested">TAE: {{ data.tae.toFixed(2) }} %</span>
+          </div>
+          <div class="resumen-item resumen-item-commission">
+            <span class="resumen-label">Comisión de apertura</span>
+            <div class="resumen-commission-right">
+              <span class="resumen-value resumen-value-commission">{{ formattedOpeningCommission }} €</span>
+              <span class="resumen-badge resumen-badge-zero">Sin comisión</span>
+            </div>
+          </div>
+          <div class="resumen-item resumen-item-total">
+            <span class="resumen-label">Total a devolver</span>
+            <span class="resumen-value resumen-value-total">{{ formattedTotalToRepay }} €</span>
+          </div>
+          <a href="#" class="resumen-link" (click)="onModifyRequest(); $event.preventDefault()">Modificar solicitud</a>
+          <div class="resumen-item">
+            <span class="resumen-label">Pago de la primera cuota</span>
+            <span class="resumen-value">{{ data.firstPaymentDate }}</span>
+          </div>
+          <div class="resumen-item">
+            <span class="resumen-label">Cuenta de depósito del préstamo</span>
+            <span class="resumen-value">{{ data.accountNumber || 'Cuenta Online Sabadell •••2930' }}</span>
+          </div>
+          <div class="resumen-item">
+            <span class="resumen-label">Titular de la cuenta</span>
+            <span class="resumen-value">{{ data.accountHolder || 'María García Palao' }}</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Sección 1: Elige el motivo del préstamo -->
+      <div class="resumen-step-section">
+        <div class="resumen-step-header">
+          <span class="resumen-step-number">1</span>
+          <h3 class="resumen-step-title">Elige el motivo del préstamo</h3>
+        </div>
+        <div class="resumen-step-content">
+          <div class="resumen-item resumen-item-dropdown" (click)="toggleLoanPurposeDropdown()">
+            <span class="resumen-label">Motivo del préstamo</span>
+            <div class="resumen-value-wrapper">
+              <span class="resumen-value">{{ data.loanPurpose || 'Motivo del préstamo' }}</span>
+              <i data-lucide="chevron-down" class="w-4 h-4" [class.rotated]="showLoanPurposeDropdown"></i>
+            </div>
+            <div class="dropdown-menu" *ngIf="showLoanPurposeDropdown" (click)="$event.stopPropagation()">
+              <div class="dropdown-item" 
+                   *ngFor="let purpose of loanPurposeOptions"
+                   (click)="selectLoanPurpose(purpose)"
+                   [class.selected]="purpose === data.loanPurpose">
+                {{ purpose }}
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="resumen-info-block">
+          <i data-lucide="info" class="resumen-info-icon" aria-hidden="true"></i>
+          <p class="resumen-info-text">
+            La cancelación anticipada será del 1,00 % del importe reembolsado, si falta más de un año para el vencimiento del contrato, o del 0,50 % del importe reembolsado en caso contrario.
+          </p>
+        </div>
+      </div>
+
+      <!-- Módulo Resumen del Seguro (solo si hay seguro) -->
+      <div class="resumen-module resumen-module-insurance" *ngIf="data.hasInsurance">
+        <h3 class="resumen-module-title">Resumen del Seguro Protección Vida Capital Constante.</h3>
+        <div class="resumen-module-content">
+          <div class="resumen-item">
+            <span class="resumen-label">Prima anual seguro</span>
+            <span class="resumen-value">{{ formattedInsuranceAnnualPremium }} €</span>
+          </div>
+          <div class="resumen-item">
+            <span class="resumen-label">Importe primer recibo</span>
+            <span class="resumen-value">{{ formattedInsuranceFirstReceipt }} €</span>
+          </div>
+          <div class="resumen-item">
+            <span class="resumen-label">Importe resto de recibos</span>
+            <span class="resumen-value">{{ formattedInsuranceMonthlyReceipt }} €</span>
+          </div>
+          <div class="resumen-item">
+            <span class="resumen-label">Forma de pago</span>
+            <span class="resumen-value">Mensual</span>
+          </div>
+          <div class="resumen-item">
+            <span class="resumen-label">Capital asegurado</span>
+            <span class="resumen-value">100% del importe del préstamo</span>
+          </div>
+          <div class="resumen-item resumen-item-stacked">
+            <span class="resumen-label">Pago de la primera cuota del seguro</span>
+            <span class="resumen-value">Plazo máximo de 2 días laborables tras la formalización del préstamo</span>
+          </div>
+          <a href="#" class="resumen-link" (click)="openDocumentViewer(); $event.preventDefault()">Ver documento precontractual del seguro</a>
+        </div>
+      </div>
+
+      <!-- Sección 2: Revisa los detalles de tu seguro (solo si hay seguro) -->
+      <div class="resumen-step-section" *ngIf="data.hasInsurance">
+        <div class="resumen-step-header">
+          <span class="resumen-step-number">2</span>
+          <h3 class="resumen-step-title">Revisa los detalles de tu seguro</h3>
+        </div>
+        <div class="resumen-step-content">
+          <div class="resumen-item resumen-item-dropdown" (click)="toggleAccountDropdown()">
+            <span class="resumen-label">Cuenta de cobro del seguro</span>
+            <div class="resumen-value-wrapper">
+              <span class="resumen-value">{{ selectedInsuranceAccount }}</span>
+              <i data-lucide="chevron-down" class="w-4 h-4" [class.rotated]="showAccountDropdown"></i>
+            </div>
+            <div class="dropdown-menu" *ngIf="showAccountDropdown" (click)="$event.stopPropagation()">
+              <div class="dropdown-item" 
+                   *ngFor="let account of availableAccounts"
+                   (click)="selectAccount(account)"
+                   [class.selected]="account === selectedInsuranceAccount">
+                {{ account }}
+              </div>
+            </div>
+          </div>
+          <div class="resumen-item resumen-item-editable">
+            <span class="resumen-label">Persona asegurada</span>
+            <div class="resumen-value-wrapper">
+              <span class="resumen-value">{{ data.accountHolder || 'María García Palao' }}</span>
+              <button type="button" class="resumen-remove-btn" aria-label="Eliminar">
+                <i data-lucide="x" class="w-4 h-4"></i>
+              </button>
+            </div>
+          </div>
+          <div class="resumen-item resumen-item-dropdown" (click)="toggleBeneficiaryDropdown()">
+            <span class="resumen-label">Beneficiario del seguro</span>
+            <div class="resumen-value-wrapper">
+              <span class="resumen-value">{{ selectedBeneficiary }}</span>
+              <i data-lucide="chevron-down" class="w-4 h-4" [class.rotated]="showBeneficiaryDropdown"></i>
+            </div>
+            <div class="dropdown-menu" *ngIf="showBeneficiaryDropdown" (click)="$event.stopPropagation()">
+              <div class="dropdown-item" 
+                   *ngFor="let beneficiary of availableBeneficiaries"
+                   (click)="selectBeneficiary(beneficiary)"
+                   [class.selected]="beneficiary === selectedBeneficiary">
+                {{ beneficiary }}
+              </div>
+            </div>
+          </div>
+          <p class="resumen-info-text">
+            Puedes modificarlo después de la contratación.
+          </p>
+        </div>
+      </div>
+
+      <!-- Legal Information -->
+      <div class="resumen-legal">
+        <div class="resumen-legal-row">
+          <i data-lucide="info" class="resumen-legal-icon" aria-hidden="true"></i>
+          <div class="resumen-legal-content">
+            <p class="resumen-legal-text">
+              Los resultados de esta simulación son de carácter informativo y válidos exclusivamente para su solicitud online.
+            </p>
+            <p class="resumen-legal-text">
+              Banco Sabadell se reserva el derecho de no hacer efectivo este préstamo si durante el periodo de tramitación de la solicitud se conoce alguna circunstancia del titular o de los titulares que pueda afectar a la capacidad de pago o a la solvencia del mismo.
+            </p>
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="resumen-footer">
+      <button type="button"
+              class="resumen-cta"
+              (click)="onNext()">
+        Leer documentación
+      </button>
+    </footer>
+
+    <!-- Toast de éxito: seguro añadido -->
+    <div class="toast-container" *ngIf="showSuccessToast">
+      <div class="toast-notification toast-success">
+        <div class="toast-icon">
+          <i data-lucide="check-circle" class="w-5 h-5"></i>
+        </div>
+        <div class="toast-message">
+          Has añadido el Seguro Protección Vida capital constante a tu solicitud
+        </div>
+        <button type="button"
+                class="toast-close"
+                (click)="closeToast()"
+                aria-label="Cerrar notificación">
+          <i data-lucide="x" class="w-4 h-4"></i>
+        </button>
+      </div>
+    </div>
+
+    <!-- Toast informativo: no es posible añadir el seguro por condición médica -->
+    <div class="toast-container" *ngIf="showMedicalToast">
+      <div class="toast-notification">
+        <div class="toast-icon">
+          <i data-lucide="alert-circle" class="w-5 h-5"></i>
+        </div>
+        <div class="toast-message">
+          El Seguro Protección Vida capital constante no está disponible para este préstamo por criterios de la aseguradora.
+        </div>
+        <button type="button"
+                class="toast-close"
+                (click)="closeToast()"
+                aria-label="Cerrar notificación">
+          <i data-lucide="x" class="w-4 h-4"></i>
+        </button>
+      </div>
+    </div>
+
+    <!-- Visor de Documentos -->
+    <div class="document-viewer-overlay" *ngIf="showDocumentViewer">
+      <div class="document-viewer-container" (click)="$event.stopPropagation()">
+        <!-- Header del visor -->
+        <header class="document-viewer-header">
+          <div class="document-viewer-actions-left">
+            <button type="button" 
+                    class="document-viewer-btn"
+                    (click)="zoomOut()"
+                    [disabled]="documentZoom <= 50"
+                    aria-label="Alejar">
+              <i data-lucide="zoom-out" class="w-5 h-5"></i>
+            </button>
+            <button type="button" 
+                    class="document-viewer-btn"
+                    (click)="zoomIn()"
+                    [disabled]="documentZoom >= 200"
+                    aria-label="Acercar">
+              <i data-lucide="zoom-in" class="w-5 h-5"></i>
+            </button>
+            <button type="button" 
+                    class="document-viewer-btn"
+                    (click)="downloadDocument()"
+                    aria-label="Descargar">
+              <i data-lucide="download" class="w-5 h-5"></i>
+            </button>
+            <button type="button" 
+                    class="document-viewer-btn"
+                    (click)="shareDocument()"
+                    aria-label="Compartir">
+              <i data-lucide="share-2" class="w-5 h-5"></i>
+            </button>
+          </div>
+          <button type="button" 
+                  class="document-viewer-close"
+                  (click)="closeDocumentViewer(); $event.stopPropagation()"
+                  aria-label="Cerrar">
+            <i data-lucide="x" class="w-6 h-6"></i>
+          </button>
+        </header>
+
+        <!-- Contenido del documento -->
+        <main class="document-viewer-content" [style.zoom]="documentZoom + '%'">
+          <div class="document-page">
+            <div class="document-header">
+              <div class="document-logo">
+                <span class="logo-s">S</span>
+                <span class="logo-text">Sabadell</span>
+              </div>
+              <div class="document-title-section">
+                <h1 class="document-title">INFORMACIÓN PREVIA</h1>
+                <h2 class="document-subtitle">Seguro Protección Vida capital constante</h2>
+              </div>
+            </div>
+
+            <div class="document-section">
+              <h3 class="section-title">INFORMACIÓN CLASIFICACIÓN PRODUCTO</h3>
+              <p class="section-text">
+                En aplicación de la Orden ECC/2316/2015, se facilita información sobre el indicador de riesgo, liquidez y alertas de complejidad del producto.
+              </p>
+              <p class="section-text">
+                <strong>Producto:</strong> Seguro Protección Vida capital constante
+              </p>
+              <p class="section-text">
+                <strong>Indicador de riesgo:</strong> Clasificación del producto financiero en alguna de las 6 categorías previstas.
+              </p>
+              <div class="risk-indicator-box">
+                <div class="risk-number">1 / 6</div>
+                <p class="risk-description">
+                  Este número es indicativo del riesgo del producto, siendo 1/6 indicativo de menor riesgo y 6/6 de mayor riesgo.
+                </p>
+              </div>
+            </div>
+
+            <div class="document-section">
+              <h3 class="section-title">Fondo de Garantía de Seguros</h3>
+              <p class="section-text">
+                Zurich Vida, Compañía de Seguros y Reaseguros, S.A. está adherida al sistema español de garantía de seguros, establecido por la Ley 20/2015. El importe máximo garantizado es de 100.000 euros por asegurado, sujeto a cambios normativos.
+              </p>
+            </div>
+
+            <div class="document-section">
+              <h3 class="section-title">INFORMACIÓN PRECONTRACTUAL</h3>
+              <p class="section-text">
+                En cumplimiento de la Circular 5/2012 del Banco de España, se facilita esta información para que el solicitante pueda tomar una decisión informada sobre la suscripción del producto o servicio financiero.
+              </p>
+              <p class="section-text-bold">
+                Las informaciones resaltadas en negrita son especialmente relevantes para Ud.
+              </p>
+            </div>
+
+            <div class="document-section">
+              <h3 class="section-title">Identidad y detalles de contacto del Proveedor</h3>
+              <p class="section-text">
+                <strong>Zurich Vida, Compañía de Seguros y Reaseguros, S.A.</strong><br>
+                NIF: A-08000000<br>
+                Actividad: Compañía de seguros supervisada por la Dirección General de Seguros y Fondos de Pensiones<br>
+                Dirección: Vía Augusta, 200, 08021 Barcelona<br>
+                Web: www.zurich.es
+              </p>
+              <p class="section-text">
+                Domicilio social: Vía Augusta, 200, 08021 Barcelona<br>
+                Inscrita en el Registro Mercantil de Barcelona, Tomo 1234, Folio 56, Hoja B-7890<br>
+                Inscrita en el Registro de la Dirección General de Seguros y Fondos de Pensiones con clave C-0000<br>
+                Email: info&#64;zurich.es
+              </p>
+            </div>
+
+            <div class="document-section">
+              <h3 class="section-title">Información general sobre el Seguro Protección Vida capital constante</h3>
+              <p class="section-text">
+                El Seguro Protección Vida capital constante es un seguro de vida que garantiza el pago de un capital constante durante toda la vigencia del préstamo en caso de fallecimiento o incapacidad permanente absoluta del asegurado.
+              </p>
+              <p class="section-text">
+                El capital asegurado será igual al importe pendiente de amortización del préstamo en cada momento, garantizando la cobertura del saldo deudor.
+              </p>
+            </div>
+
+            <div class="document-footer">
+              <span class="page-number">Página 1/5</span>
+            </div>
+          </div>
+        </main>
+
+        <!-- Indicador de scroll -->
+        <div class="document-scroll-indicator">
+          <i data-lucide="chevron-down" class="w-5 h-5"></i>
+        </div>
+      </div>
+    </div>
+
+
+    <!-- Modal full-screen FAQs -->
+    <div class="faq-modal-overlay" *ngIf="showFaqModal" role="dialog" aria-labelledby="faq-title-res" aria-modal="true">
+      <div class="faq-modal">
+        <header class="faq-modal-header">
+          <h2 id="faq-title-res" class="faq-modal-title">Preguntas frecuentes</h2>
+          <button type="button" class="faq-modal-close" aria-label="Cerrar" (click)="onCloseFaq()">
+            <i data-lucide="x" class="w-5 h-5"></i>
+          </button>
+        </header>
+        <div class="faq-tabs">
+          <button type="button" class="faq-tab" [class.faq-tab-active]="faqActiveTab === 'prestamo'" (click)="setFaqTab('prestamo')">Préstamo</button>
+          <button type="button" class="faq-tab" [class.faq-tab-active]="faqActiveTab === 'seguro'" (click)="setFaqTab('seguro')">Seguro</button>
+        </div>
+        <div class="faq-content">
+          <div class="faq-list" *ngIf="faqActiveTab === 'prestamo'">
+            <div *ngFor="let item of prestamoFaqs; let i = index" class="faq-item" [class.faq-item-open]="expandedPrestamoId === i">
+              <button type="button" class="faq-item-question" (click)="togglePrestamoFaq(i)" [attr.aria-expanded]="expandedPrestamoId === i">
+                <span class="faq-item-question-text">{{ item.question }}</span>
+                <i data-lucide="chevron-down" class="faq-item-chevron"></i>
+              </button>
+              <div class="faq-item-answer" *ngIf="expandedPrestamoId === i"><p>{{ item.answer }}</p></div>
+            </div>
+          </div>
+          <div class="faq-list" *ngIf="faqActiveTab === 'seguro'">
+            <p class="faq-intro-text">
+              La información de esta sección sobre el seguro solo aplica si en tu caso puedes añadir el Seguro Protección Vida capital constante a tu Préstamo Preconcedido online.
+            </p>
+            <div *ngFor="let item of seguroFaqs; let i = index" class="faq-item" [class.faq-item-open]="expandedSeguroId === i">
+              <button type="button" class="faq-item-question" (click)="toggleSeguroFaq(i)" [attr.aria-expanded]="expandedSeguroId === i">
+                <span class="faq-item-question-text">{{ item.question }}</span>
+                <i data-lucide="chevron-down" class="faq-item-chevron"></i>
+              </button>
+              <div class="faq-item-answer" *ngIf="expandedSeguroId === i"><p>{{ item.answer }}</p></div>
+            </div>
+          </div>
+        </div>
+        <footer class="faq-modal-footer">
+          <button type="button" class="faq-help-link" (click)="onFaqHelp()">
+            <i data-lucide="headphones" class="faq-help-icon"></i>
+            <span>¿Sigues necesitando ayuda?</span>
+          </button>
+        </footer>
+      </div>
+    </div>
+  </div>
+</div>

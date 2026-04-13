@@ -1,0 +1,369 @@
+<div class="prestamo-coche-simulacion-container">
+  <div class="prestamo-coche-simulacion-wrapper">
+    <!-- Header -->
+    <header class="simulacion-header">
+      <button class="header-back-btn" (click)="onBack()">
+        <i data-lucide="arrow-left" class="w-5 h-5 stroke-[1.5]"></i>
+      </button>
+      <h1 class="header-title">Préstamo Preconcedido</h1>
+      <div class="header-actions">
+        <button class="header-icon-btn" aria-label="Chat" (click)="onOpenFaq()">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" style="width: 1.5rem; height: 1.5rem;">
+            <path fill-rule="evenodd" clip-rule="evenodd" d="M5.97394 16.3997L4.71817 19.2968L8.10519 18.4877L8.64737 18.7931C9.78922 19.4362 11.1073 19.8036 12.516 19.8036C16.8775 19.8036 20.4131 16.2679 20.4131 11.9064C20.4131 7.54492 16.8775 4.00924 12.516 4.00924C8.15447 4.00924 4.61879 7.54492 4.61879 11.9064C4.61879 13.2914 4.97397 14.5887 5.597 15.7171L5.97394 16.3997ZM2 21.5776L4.20784 16.4841C3.45844 15.1269 3.03193 13.5665 3.03193 11.9064C3.03193 6.66853 7.27808 2.42238 12.516 2.42238C17.7539 2.42238 22 6.66853 22 11.9064C22 17.1443 17.7539 21.3904 12.516 21.3904C10.8275 21.3904 9.24202 20.9492 7.86866 20.1757L2 21.5776Z" fill="currentColor"/>
+            <path d="M15.3142 7.33122C16.1468 8.67695 15.6607 10.261 14.254 11.4516L13.8804 11.776C13.2113 12.3757 12.9958 12.6992 12.9666 13.0614L12.963 13.1529V13.8303H11.6081V13.1529C11.6081 12.1741 12.0641 11.5302 13.3787 10.4175C14.3226 9.61859 14.5923 8.73953 14.162 8.04401C13.7796 7.42575 12.4297 7.26492 11.1814 7.72963L10.9488 7.82413L10.3291 8.0977L9.78194 6.85822L10.4017 6.58466C12.2545 5.76678 14.4752 5.97501 15.3142 7.33122Z" fill="currentColor"/>
+            <path d="M11.2483 16.8772C11.2483 16.316 11.7032 15.861 12.2644 15.861C12.8256 15.861 13.2805 16.316 13.2805 16.8772C13.2805 17.4384 12.8256 17.8933 12.2644 17.8933C11.7032 17.8933 11.2483 17.4384 11.2483 16.8772Z" fill="currentColor"/>
+          </svg>
+        </button>
+        <button class="header-icon-btn" aria-label="Cerrar" (click)="onCloseRequest()">
+          <i data-lucide="x" class="w-5 h-5 stroke-[1.5]"></i>
+        </button>
+      </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="simulacion-main">
+      <h2 class="simulacion-title">Personaliza tu préstamo</h2>
+
+      <!-- Amount Section -->
+      <div class="form-section">
+        <app-amount-slider-galatea
+          [value]="amount"
+          [minValue]="minAmount"
+          [maxValue]="maxAmount"
+          [step]="500"
+          unit="€"
+          mainTitle="¿Cuánto dinero necesitas?"
+          inputLabel="Cantidad"
+          [showMinMax]="true"
+          (valueChange)="onAmountChange($event)"
+          class="amount-slider-galatea">
+        </app-amount-slider-galatea>
+      </div>
+
+      <!-- Term Section -->
+      <div class="form-section">
+        <h3 class="form-section-title">¿En cuántos años quieres devolverlo?</h3>
+        <div class="term-buttons">
+          <button type="button"
+                  class="term-btn"
+                  [class.active]="termMonths === 96"
+                  (click)="selectTerm(96)">
+            8 años
+          </button>
+          <button type="button"
+                  class="term-btn"
+                  [class.active]="termMonths === 70"
+                  (click)="selectTerm(70)">
+            7 años
+          </button>
+          <button type="button"
+                  class="term-btn"
+                  [class.active]="termMonths === 50"
+                  (click)="selectTerm(50)">
+            5 años
+          </button>
+          <button type="button"
+                  class="term-btn"
+                  [class.active]="termMonths === 30"
+                  (click)="selectTerm(30)">
+            3 años
+          </button>
+        </div>
+      </div>
+
+      <!-- Monthly Payment Summary -->
+      <div class="payment-summary">
+        <h4 class="payment-summary-title">Cuota mensual personalizada</h4>
+        <div class="payment-summary-amount">{{ formattedMonthlyPayment }} € / mes</div>
+        <div class="payment-summary-rates">TIN {{ tin.toFixed(2) }} % anual TAE {{ tae.toFixed(2) }}%</div>
+      </div>
+
+      <!-- Importe no múltiplo de 500: titular y body como en múltiplo de 500, luego card de consentimiento -->
+      <div class="form-section" *ngIf="!hasDeclaredMedicalCondition && !amountIsMultipleOf500 && !userAcceptedDataShare">
+        <div class="insurance-module-container">
+          <h3 class="insurance-module-title">Añade un seguro a tu préstamo</h3>
+          <p class="insurance-module-description">
+            En caso de fallecimiento o incapacidad permanente absoluta, este seguro cubre al titular la devolución de su préstamo.
+          </p>
+          <a href="#" 
+             class="insurance-module-link"
+             (click)="openInsuranceDrawer(); $event.preventDefault()">
+            Más información
+          </a>
+          <label class="insurance-consent-checkbox-label">
+            <input type="checkbox"
+                   class="insurance-consent-checkbox"
+                   [checked]="dataShareAccepted"
+                   (change)="onDataShareCheckChange($event)">
+            <span class="insurance-consent-checkbox-text">Me interesa conocer el precio personalizado del seguro Protección Vida Capital Constante que se comercializa junto al préstamo.</span>
+          </label>
+        </div>
+        <div class="insurance-consent-info">
+          <i data-lucide="info" class="insurance-consent-info-icon" aria-hidden="true"></i>
+          <div class="insurance-consent-info-content">
+            <p class="insurance-consent-info-text">
+              Para poder facilitarte tu precio personalizado, el Banco comunicará a Banc Sabadell Vida tus datos identificativos y los relacionados con el préstamo con el fin de facilitarte el precio.
+            </p>
+            <p class="insurance-consent-legal">
+              Podrás ejercer tus derechos a través del correo electrónico DPO_BSVida&#64;BSVida.com y tienes más información de protección de datos en la página web <a href="https://www.sabadellsegurosypensiones.com" target="_blank" class="insurance-consent-link">www.sabadellsegurosypensiones.com</a>.
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Mini carga del módulo seguro (tras aceptar compartir datos) -->
+      <div class="form-section insurance-loading-section" *ngIf="!hasDeclaredMedicalCondition && !amountIsMultipleOf500 && userAcceptedDataShare && loadingInsuranceQuote">
+        <div class="insurance-quote-loading">
+          <div class="insurance-quote-spinner"></div>
+          <p class="insurance-quote-loading-text">Calculando precio del seguro...</p>
+        </div>
+      </div>
+
+      <!-- Insurance Section: check del seguro (múltiplo de 500 o tras aceptar datos) -->
+      <div class="form-section" *ngIf="!hasDeclaredMedicalCondition && (amountIsMultipleOf500 || (userAcceptedDataShare && !loadingInsuranceQuote))">
+        <div class="insurance-module-container">
+          <h3 class="insurance-module-title">¿Quieres asegurar tu préstamo?</h3>
+          <p class="insurance-module-description">
+            En caso de fallecimiento o incapacidad permanente absoluta, este seguro cubre al titular la devolución de su préstamo.
+          </p>
+          <a href="#" 
+             class="insurance-module-link"
+             (click)="openInsuranceDrawer(); $event.preventDefault()">
+            Más información
+          </a>
+          <div class="insurance-option-wrapper">
+            <input type="checkbox"
+                   id="insurance-checkbox"
+                   [checked]="hasInsurance"
+                   [disabled]="isInsuranceDisabled"
+                   (change)="onInsuranceToggle($event)"
+                   class="insurance-checkbox-native"
+                   [class.disabled]="isInsuranceDisabled">
+            <label for="insurance-checkbox" class="insurance-label-wrapper" [class.disabled]="isInsuranceDisabled">
+              <span class="insurance-checkbox-label">
+                Añadir Seguro Protección Vida capital constante por <strong>{{ insuranceCost.toFixed(2).replace('.', ',') }} €</strong>/mes (Primer recibo {{ insuranceFirstReceipt.toFixed(2).replace('.', ',') }} €).
+              </span>
+            </label>
+          </div>
+        </div>
+      </div>
+
+      <!-- Texto legal: solo cuando ha elegido el seguro (Situación 1) -->
+      <div class="form-section insurance-legal-block" *ngIf="!hasDeclaredMedicalCondition && hasInsurance">
+        <div class="insurance-legal-row">
+          <i data-lucide="info" class="insurance-legal-icon" aria-hidden="true"></i>
+          <p class="insurance-legal-text">
+            Te informamos de que todo el proceso y las gestiones relacionadas con dicho seguro serán realizadas por la aseguradora BancSabadell Vida. Asimismo, te informamos de que dicha aseguradora tratará tus datos personales, dependiendo del riesgo también tus datos de salud, para la valoración y tarificación del riesgo, en base a la ejecución de medidas precontractuales y en tu consentimiento al añadir el producto de seguro. Puedes ejercer tus derechos y obtener más información en:
+            <a href="https://www.sabadellsegurosypensiones.com"
+               target="_blank"
+               rel="noopener noreferrer">
+              www.sabadellsegurosypensiones.com
+            </a>.
+          </p>
+        </div>
+      </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="simulacion-footer">
+      <button type="button"
+              class="simulacion-cta"
+              (click)="onNext()">
+        Continuar
+      </button>
+    </footer>
+
+    <!-- Toast de notificación -->
+    <div class="toast-container" *ngIf="showToast">
+      <div class="toast-notification" [class.toast-alert]="toastType === 'alert'">
+        <div class="toast-icon">
+          <i [attr.data-lucide]="toastType === 'alert' ? 'alert-circle' : 'info'" class="w-5 h-5"></i>
+        </div>
+        <div class="toast-message">
+          {{ toastMessage }}
+        </div>
+        <button type="button"
+                class="toast-close"
+                (click)="closeToast()"
+                aria-label="Cerrar notificación">
+          <i data-lucide="x" class="w-4 h-4"></i>
+        </button>
+      </div>
+    </div>
+
+    <!-- Modal médico fullscreen -->
+    <div class="medical-modal-overlay" *ngIf="showMedicalModal">
+      <div class="medical-modal-container">
+        <!-- Header -->
+        <header class="medical-modal-header">
+          <h2 class="medical-modal-header-title">Condiciones médicas</h2>
+          <button type="button"
+                  class="medical-modal-close-btn"
+                  (click)="closeMedicalModal()"
+                  aria-label="Cerrar">
+            <i data-lucide="x" class="w-6 h-6"></i>
+          </button>
+        </header>
+
+        <!-- Content -->
+        <main class="medical-modal-content">
+          <h2 class="medical-modal-title">
+            Antes de añadir el seguro, necesitamos saber si en tu historial médico figura alguna de estas condiciones:
+          </h2>
+          
+          <ul class="medical-conditions-list">
+            <li class="medical-condition-item">Baja laboral actualmente</li>
+            <li class="medical-condition-item">Incapacidad permanente (concedida o en trámite)</li>
+            <li class="medical-condition-item">Cáncer o tumores malignos (excepto si han pasado más de 5 años desde la finalización del tratamiento radical sin recaída posterior)</li>
+            <li class="medical-condition-item">Angina de pecho</li>
+            <li class="medical-condition-item">Insuficiencia cardiaca</li>
+            <li class="medical-condition-item">Infarto de miocardio</li>
+            <li class="medical-condition-item">Crisis de asma con ingreso hospitalario</li>
+            <li class="medical-condition-item">Diabetes con necesidad de insulina</li>
+            <li class="medical-condition-item">Bronquitis crónica</li>
+            <li class="medical-condition-item">Enfisema</li>
+            <li class="medical-condition-item">Hepatitis C</li>
+          </ul>
+        </main>
+
+        <!-- Footer -->
+        <footer class="medical-modal-footer">
+          <button type="button"
+                  class="medical-modal-btn medical-modal-btn-primary"
+                  (click)="onConfirmNoMedicalCondition()">
+            No tengo ninguna de estas condiciones
+          </button>
+          <button type="button"
+                  class="medical-modal-btn medical-modal-btn-secondary"
+                  (click)="onHasMedicalCondition()">
+            Sí, tengo o he tenido alguna
+          </button>
+        </footer>
+      </div>
+    </div>
+
+    <!-- Drawer de información del seguro -->
+    <div class="insurance-drawer-overlay" *ngIf="showInsuranceDrawer" (click)="closeInsuranceDrawer()">
+      <div class="insurance-drawer" (click)="$event.stopPropagation()">
+        <!-- Header -->
+        <div class="drawer-header">
+          <h3 class="drawer-subtitle">Más información</h3>
+          <h2 class="drawer-title">Seguro Protección Vida - Capital constante</h2>
+          <button type="button" 
+                  class="drawer-close-btn"
+                  (click)="closeInsuranceDrawer()"
+                  aria-label="Cerrar">
+            <i data-lucide="x" class="w-6 h-6"></i>
+          </button>
+        </div>
+
+        <!-- Content -->
+        <div class="drawer-content">
+          <div class="drawer-info-section">
+            <h4 class="drawer-info-title">¿Para qué sirve este seguro?</h4>
+            <p class="drawer-info-text">
+              Este seguro cubre la devolución total o parcial del préstamo en caso de fallecimiento o invalidez permanente absoluta (IPA), con el objetivo de reducir el impacto económico en la familia, especialmente si dependen de los ingresos del asegurado.
+            </p>
+          </div>
+
+          <div class="drawer-info-section">
+            <h4 class="drawer-info-title">¿Cuáles son las garantías y coberturas?</h4>
+            <ul class="drawer-info-list">
+              <li>Fallecimiento</li>
+              <li>Invalidez Permanente Absoluta, por el motivo que sea, incluso accidente.</li>
+            </ul>
+          </div>
+
+          <div class="drawer-info-section">
+            <h4 class="drawer-info-title">¿Cuál es el capital asegurado?</h4>
+            <p class="drawer-info-text">
+              El capital asegurado es igual al importe del préstamo y no cambia, salvo que solicites modificarlo en una oficina.
+            </p>
+          </div>
+
+          <div class="drawer-info-section">
+            <h4 class="drawer-info-title">¿Cuándo entra en vigor?</h4>
+            <p class="drawer-info-text">
+              La fecha de efecto del seguro será el mismo día en que formalizas el préstamo.
+            </p>
+          </div>
+
+          <div class="drawer-info-section">
+            <h4 class="drawer-info-title">¿Puedo cancelarlo?</h4>
+            <p class="drawer-info-text">
+              El seguro se renueva automáticamente de forma anual y se cancela si amortizas todo el préstamo antes de tiempo, salvo que decidas seguir con él. También puedes solicitar la cancelación anual con al menos un mes de antelación a la fecha de vencimiento del seguro.
+            </p>
+          </div>
+
+          <div class="drawer-info-section">
+            <h4 class="drawer-info-title">¿Cómo se contrata?</h4>
+            <p class="drawer-info-text">
+              La contratación es 100% digital y consta de 4 pasos:
+            </p>
+            <ol class="drawer-info-list">
+              <li>Añades el seguro durante la simulación del préstamo.</li>
+              <li>Confirmas una declaración de salud.</li>
+              <li>Revisas la información del préstamo junto con el seguro, si decides incluirlo.</li>
+              <li>Lees y firmas toda la documentación necesaria para formalizar el contrato.</li>
+            </ol>
+          </div>
+
+        </div>
+
+        <!-- Footer -->
+        <div class="drawer-footer">
+          <button type="button"
+                  class="drawer-cta"
+                  (click)="closeInsuranceDrawer()">
+            Entendido
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Modal full-screen FAQs -->
+    <div class="faq-modal-overlay" *ngIf="showFaqModal" role="dialog" aria-labelledby="faq-title-sim" aria-modal="true">
+      <div class="faq-modal">
+        <header class="faq-modal-header">
+          <h2 id="faq-title-sim" class="faq-modal-title">Preguntas frecuentes</h2>
+          <button type="button" class="faq-modal-close" aria-label="Cerrar" (click)="onCloseFaq()">
+            <i data-lucide="x" class="w-5 h-5"></i>
+          </button>
+        </header>
+        <div class="faq-tabs">
+          <button type="button" class="faq-tab" [class.faq-tab-active]="faqActiveTab === 'prestamo'" (click)="setFaqTab('prestamo')">Préstamo</button>
+          <button type="button" class="faq-tab" [class.faq-tab-active]="faqActiveTab === 'seguro'" (click)="setFaqTab('seguro')">Seguro</button>
+        </div>
+        <div class="faq-content">
+          <div class="faq-list" *ngIf="faqActiveTab === 'prestamo'">
+            <div *ngFor="let item of prestamoFaqs; let i = index" class="faq-item" [class.faq-item-open]="expandedPrestamoId === i">
+              <button type="button" class="faq-item-question" (click)="togglePrestamoFaq(i)" [attr.aria-expanded]="expandedPrestamoId === i">
+                <span class="faq-item-question-text">{{ item.question }}</span>
+                <i data-lucide="chevron-down" class="faq-item-chevron"></i>
+              </button>
+              <div class="faq-item-answer" *ngIf="expandedPrestamoId === i"><p>{{ item.answer }}</p></div>
+            </div>
+          </div>
+          <div class="faq-list" *ngIf="faqActiveTab === 'seguro'">
+            <p class="faq-intro-text">
+              La información de esta sección sobre el seguro solo aplica si en tu caso puedes añadir el Seguro Protección Vida capital constante a tu Préstamo Preconcedido online.
+            </p>
+            <div *ngFor="let item of seguroFaqs; let i = index" class="faq-item" [class.faq-item-open]="expandedSeguroId === i">
+              <button type="button" class="faq-item-question" (click)="toggleSeguroFaq(i)" [attr.aria-expanded]="expandedSeguroId === i">
+                <span class="faq-item-question-text">{{ item.question }}</span>
+                <i data-lucide="chevron-down" class="faq-item-chevron"></i>
+              </button>
+              <div class="faq-item-answer" *ngIf="expandedSeguroId === i"><p>{{ item.answer }}</p></div>
+            </div>
+          </div>
+        </div>
+        <footer class="faq-modal-footer">
+          <button type="button" class="faq-help-link" (click)="onFaqHelp()">
+            <i data-lucide="headphones" class="faq-help-icon"></i>
+            <span>¿Sigues necesitando ayuda?</span>
+          </button>
+        </footer>
+      </div>
+    </div>
+  </div>
+</div>

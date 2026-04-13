@@ -1,0 +1,42 @@
+<div class="wizard-root">
+  <app-upcoming-payment-detail-sheet></app-upcoming-payment-detail-sheet>
+  <div class="wizard-container">
+  <!-- Progress Indicator -->
+  <div class="wizard-progress" *ngIf="currentStep > 3 && currentStep <= 9">
+    <div class="progress-bar">
+      <div class="progress-fill" [style.width.%]="((currentStep - 3) / 6) * 100"></div>
+    </div>
+    <div class="progress-steps">
+      <span class="step-indicator">{{ currentStep - 3 }} / 6</span>
+    </div>
+  </div>
+
+  <!-- Step Content -->
+  <div class="wizard-content">
+    <ng-container [ngSwitch]="currentStep">
+      <!-- Paso 1: Próximos pagos o Posición global -->
+      <ng-container *ngSwitchCase="1">
+        <ng-container *ngIf="state$ | async as ws">
+          <app-proximos-pagos *ngIf="ws.entryScreen === 'proximos-pagos'"></app-proximos-pagos>
+          <app-posicion-global
+            *ngIf="ws.entryScreen !== 'proximos-pagos'"
+            (next)="nextStep()"
+            (goToPotencialFinanciero)="goToStep(4)"
+          ></app-posicion-global>
+        </ng-container>
+      </ng-container>
+      <app-contratar *ngSwitchCase="2" (next)="nextStep()" (previous)="previousStep()"></app-contratar>
+      <app-prestamos *ngSwitchCase="3" (next)="nextStep()" (previous)="previousStep()"></app-prestamos>
+      
+      <!-- Flujo MVP: MoneyConfidence -->
+      <app-landing *ngSwitchCase="4" (next)="nextStep()" (previous)="previousStep()"></app-landing>
+      <app-perfil-financiero *ngSwitchCase="5" (next)="nextStep()" (previous)="previousStep()"></app-perfil-financiero>
+      <app-capacidad-financiacion *ngSwitchCase="6" (next)="nextStep()" (previous)="previousStep()"></app-capacidad-financiacion>
+      <app-recomendaciones-productos *ngSwitchCase="7" (next)="nextStep()" (previous)="previousStep()"></app-recomendaciones-productos>
+      <app-establecer-meta *ngSwitchCase="8" (next)="nextStep()" (previous)="previousStep()"></app-establecer-meta>
+      <app-resumen *ngSwitchCase="9" (previous)="previousStep()"></app-resumen>
+      <app-gestionar-pagos-hub *ngSwitchCase="10" (close)="goToStep(1)"></app-gestionar-pagos-hub>
+    </ng-container>
+  </div>
+</div>
+</div>

@@ -1,0 +1,169 @@
+<div class="prestamo-coche-onboarding-overlay">
+  <div class="prestamo-coche-onboarding-drawer" 
+       role="dialog" 
+       aria-modal="true"
+       [class.drawer-expanded]="drawerExpanded">
+    <div class="prestamo-coche-onboarding-drag-handle" 
+         (click)="expandDrawer()"
+         (touchstart)="expandDrawer()"
+         role="button"
+         tabindex="0"
+         aria-label="Ampliar"
+         (keydown.enter)="expandDrawer()"
+         (keydown.space)="expandDrawer(); $event.preventDefault()"></div>
+    <!-- Header dentro del drawer -->
+    <header class="onboarding-header">
+      <button class="header-icon-btn" (click)="onClose()" aria-label="Cerrar">
+        <i data-lucide="x" class="w-5 h-5 stroke-[1.5]"></i>
+      </button>
+    </header>
+
+    <!-- Main Content -->
+    <main class="onboarding-main" (scroll)="expandDrawer()">
+      <section class="onboarding-section">
+        <h2 class="onboarding-amount-title">Solicita hasta 45.000 €</h2>
+        <ul class="loan-offer-features">
+          <li class="loan-offer-feature">
+            <i data-lucide="check" class="w-5 h-5 stroke-[2]"></i>
+            <span>Sin necesidad de adjuntar documentación</span>
+          </li>
+          <li class="loan-offer-feature">
+            <i data-lucide="check" class="w-5 h-5 stroke-[2]"></i>
+            <span>Tú eliges la cuota mensual</span>
+          </li>
+          <li class="loan-offer-feature">
+            <i data-lucide="check" class="w-5 h-5 stroke-[2]"></i>
+            <span>100 % online</span>
+          </li>
+        </ul>
+      </section>
+
+      <section class="process-section">
+        <h3 class="process-title">Conseguir tu préstamo es muy sencillo:</h3>
+        <div class="process-steps-numeric">
+          <div class="process-step-numeric">
+            <span class="process-step-number">1</span>
+            <span class="process-step-text">Personaliza tu préstamo</span>
+          </div>
+          <div class="process-step-numeric">
+            <span class="process-step-number">2</span>
+            <span class="process-step-text">Revisa los detalles</span>
+          </div>
+          <div class="process-step-numeric">
+            <span class="process-step-number">3</span>
+            <span class="process-step-text">Lee la documentación</span>
+          </div>
+          <div class="process-step-numeric">
+            <span class="process-step-number">4</span>
+            <span class="process-step-text">Firma la solicitud</span>
+          </div>
+        </div>
+      </section>
+
+      <section class="onboarding-more-info">
+        <button
+          type="button"
+          class="onboarding-link-button"
+          (click)="onOpenFaq()">
+          Más información
+        </button>
+      </section>
+
+      <section class="onboarding-legal">
+        <p class="onboarding-legal-text">
+          Te informamos que podemos tratar los datos personales de los que dispongamos, así como aquellos que nos hayas incorporado en el proceso, para contactarte en caso de que, por cualquier razón, se abandone el proceso con la finalidad de conocer las razones e intentar recuperarlo. Puedes ejercer tus derechos en protección de datos conforme a la información que ya te ha sido proporcionada.
+        </p>
+      </section>
+    </main>
+
+    <!-- Footer sticky dentro del drawer -->
+    <footer class="onboarding-footer">
+      <button
+        type="button"
+        class="onboarding-cta"
+        (click)="onSimularCuota()">
+        Simular cuota
+      </button>
+    </footer>
+
+    <!-- Modal full-screen FAQs -->
+    <div class="faq-modal-overlay" *ngIf="showFaqModal" role="dialog" aria-labelledby="faq-title" aria-modal="true">
+      <div class="faq-modal">
+        <header class="faq-modal-header">
+          <h2 id="faq-title" class="faq-modal-title">Preguntas frecuentes</h2>
+          <button type="button" class="faq-modal-close" aria-label="Cerrar" (click)="onCloseFaq()">
+            <i data-lucide="x" class="w-5 h-5"></i>
+          </button>
+        </header>
+
+        <div class="faq-tabs">
+          <button
+            type="button"
+            class="faq-tab"
+            [class.faq-tab-active]="faqActiveTab === 'prestamo'"
+            (click)="setFaqTab('prestamo')">
+            Préstamo
+          </button>
+          <button
+            type="button"
+            class="faq-tab"
+            [class.faq-tab-active]="faqActiveTab === 'seguro'"
+            (click)="setFaqTab('seguro')">
+            Seguro
+          </button>
+        </div>
+
+        <div class="faq-content">
+          <!-- Préstamo FAQs -->
+          <div class="faq-list" *ngIf="faqActiveTab === 'prestamo'">
+            <div
+              *ngFor="let item of prestamoFaqs; let i = index"
+              class="faq-item"
+              [class.faq-item-open]="expandedPrestamoId === i">
+              <button
+                type="button"
+                class="faq-item-question"
+                (click)="togglePrestamoFaq(i)"
+                [attr.aria-expanded]="expandedPrestamoId === i">
+                <span class="faq-item-question-text">{{ item.question }}</span>
+                <i data-lucide="chevron-down" class="faq-item-chevron"></i>
+              </button>
+              <div class="faq-item-answer" *ngIf="expandedPrestamoId === i">
+                <p>{{ item.answer }}</p>
+              </div>
+            </div>
+          </div>
+          <!-- Seguro FAQs -->
+          <div class="faq-list" *ngIf="faqActiveTab === 'seguro'">
+            <p class="faq-intro-text">
+              La información de esta sección sobre el seguro solo aplica si en tu caso puedes añadir el Seguro Protección Vida capital constante a tu Préstamo Preconcedido online.
+            </p>
+            <div
+              *ngFor="let item of seguroFaqs; let i = index"
+              class="faq-item"
+              [class.faq-item-open]="expandedSeguroId === i">
+              <button
+                type="button"
+                class="faq-item-question"
+                (click)="toggleSeguroFaq(i)"
+                [attr.aria-expanded]="expandedSeguroId === i">
+                <span class="faq-item-question-text">{{ item.question }}</span>
+                <i data-lucide="chevron-down" class="faq-item-chevron"></i>
+              </button>
+              <div class="faq-item-answer" *ngIf="expandedSeguroId === i">
+                <p>{{ item.answer }}</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <footer class="faq-modal-footer">
+          <button type="button" class="faq-help-link" (click)="onFaqHelp()">
+            <i data-lucide="headphones" class="faq-help-icon"></i>
+            <span>¿Sigues necesitando ayuda?</span>
+          </button>
+        </footer>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,89 @@
+<div class="login-wrapper">
+  <div class="login-container">
+    <header class="login-header">
+      <div class="login-logo">
+        <img src="assets/sabadell-logo.png" alt="Banco Sabadell" />
+      </div>
+      <div class="login-header-text">
+        <div class="secure-text">
+          <span class="secure-icon">🔒</span>
+          <span>Estás en un <a href="#" class="secure-link">entorno seguro</a></span>
+        </div>
+      </div>
+    </header>
+
+    <main class="login-main">
+      <form (ngSubmit)="onSubmit()" class="login-form">
+        <div class="form-group">
+          <label for="perfil">Tu perfil de acceso</label>
+          <div class="select-like" id="perfil">
+            <span>{{ accessProfile }}</span>
+            <span class="chevron">⌄</span>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="dni">DNI / NIE / Pasaporte</label>
+          <input
+            id="dni"
+            type="text"
+            [(ngModel)]="dni"
+            name="dni"
+            autocomplete="off"
+            placeholder="Introduce tu documento"
+          />
+        </div>
+
+        <div class="form-group">
+          <label for="password">Contraseña</label>
+          <div class="password-wrapper">
+            <input
+              id="password"
+              [type]="showPassword ? 'text' : 'password'"
+              [(ngModel)]="password"
+              name="password"
+              autocomplete="off"
+              placeholder="Introduce tu contraseña"
+            />
+            <button
+              type="button"
+              class="toggle-password"
+              (click)="onTogglePassword()"
+              aria-label="Mostrar u ocultar contraseña"
+            >
+              {{ showPassword ? '🙈' : '👁️' }}
+            </button>
+          </div>
+        </div>
+
+        <div class="error-message" *ngIf="errorMessage">
+          {{ errorMessage }}
+        </div>
+
+        <button
+          type="submit"
+          class="btn-primary"
+          [disabled]="!canSubmit"
+        >
+          Entrar
+        </button>
+      </form>
+
+      <div class="help-link">
+        <a href="#">¿Necesitas ayuda para acceder?</a>
+      </div>
+    </main>
+
+    <footer class="login-footer">
+      <div class="footer-links">
+        <button type="button">Cajeros y oficinas</button>
+        <button type="button">Hazte cliente</button>
+        <button type="button">Emergencia</button>
+      </div>
+      <div class="version-text">
+        Versión: demo-PCS
+      </div>
+    </footer>
+  </div>
+</div>
+

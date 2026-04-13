@@ -166,11 +166,6 @@ export class PosicionGlobalComponent implements AfterViewInit, OnDestroy, OnInit
     return c === 1 ? '1 pago' : `${c} pagos`;
   }
 
-  /** Hasta 3 comercios con logo para la píldora “Próximos pagos” en vista saldo */
-  get pillMerchantPreview(): UpcomingPaymentItem[] {
-    return this.upcomingPaymentsItems.filter(it => it.logoVariant).slice(0, 3);
-  }
-
   /** Próximos movimientos filtrados por cuenta del carrusel */
   get upcomingItemsForSelectedAccount(): UpcomingPaymentItem[] {
     return this.upcomingPaymentsItems.filter(it => {
@@ -181,13 +176,6 @@ export class PosicionGlobalComponent implements AfterViewInit, OnDestroy, OnInit
       return a.includes(this.selectedAccount);
     });
   }
-
-  /** Arrastre horizontal saldo ↔ próximos pagos */
-  pillDragOffset = 0;
-  pillPointerActive = false;
-  private pillDragStartX = 0;
-  private readonly swipeThresholdPx = 48;
-  private readonly tapThresholdPx = 12;
 
   constructor(
     private cdr: ChangeDetectorRef,
@@ -354,10 +342,6 @@ export class PosicionGlobalComponent implements AfterViewInit, OnDestroy, OnInit
     sessionStorage.setItem('from-prestamo-modal', 'true');
   }
 
-  onToggleBalanceCard(): void {
-    this.wizardState.togglePosicionGlobalCardView();
-  }
-
   selectBalanceTab(view: 'total' | 'upcoming'): void {
     if (this.posicionCardView === view) {
       return;
@@ -365,61 +349,6 @@ export class PosicionGlobalComponent implements AfterViewInit, OnDestroy, OnInit
     this.wizardState.setPosicionGlobalCardView(view);
     this.cdr.markForCheck();
     setTimeout(() => this.initializeIcons(), 80);
-  }
-
-  onBalanceSwipePointerDown(event: PointerEvent): void {
-    if (event.button !== 0) {
-      return;
-    }
-    this.pillPointerActive = true;
-    this.pillDragStartX = event.clientX;
-    (event.currentTarget as HTMLElement).setPointerCapture(event.pointerId);
-  }
-
-  onBalanceSwipePointerMove(event: PointerEvent): void {
-    if (!this.pillPointerActive) {
-      return;
-    }
-    const raw = event.clientX - this.pillDragStartX;
-    this.pillDragOffset = Math.max(-72, Math.min(72, raw));
-    this.cdr.markForCheck();
-  }
-
-  onBalanceSwipePointerUp(event: PointerEvent): void {
-    if (!this.pillPointerActive) {
-      return;
-    }
-    const dx = event.clientX - this.pillDragStartX;
-    this.pillPointerActive = false;
-    this.pillDragOffset = 0;
-    try {
-      (event.currentTarget as HTMLElement).releasePointerCapture(event.pointerId);
-    } catch {
-      /* noop */
-    }
-
-    if (Math.abs(dx) < this.tapThresholdPx) {
-      this.wizardState.togglePosicionGlobalCardView();
-    } else if (dx < -this.swipeThresholdPx && this.posicionCardView === 'total') {
-      this.wizardState.setPosicionGlobalCardView('upcoming');
-    } else if (dx > this.swipeThresholdPx && this.posicionCardView === 'upcoming') {
-      this.wizardState.setPosicionGlobalCardView('total');
-    } else if (Math.abs(dx) >= this.swipeThresholdPx) {
-      this.wizardState.togglePosicionGlobalCardView();
-    }
-
-    this.cdr.markForCheck();
-  }
-
-  onBalanceSwipePointerCancel(event: PointerEvent): void {
-    this.pillPointerActive = false;
-    this.pillDragOffset = 0;
-    try {
-      (event.currentTarget as HTMLElement).releasePointerCapture(event.pointerId);
-    } catch {
-      /* noop */
-    }
-    this.cdr.markForCheck();
   }
 
   onGestionarGastos(): void {

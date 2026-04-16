@@ -192,6 +192,11 @@ export interface WizardState {
   gestionarPagosDirectoSuscripciones?: boolean;
   /** Si viene informado con directo suscripciones, abrir el detalle de esa suscripción (id demo del hub) */
   gestionarPagosAbrirSuscripcionId?: string | null;
+  /**
+   * Tras el banner verde «Préstamo Sabadell» en Posición global: al montar Préstamos, abrir ese flujo directamente.
+   * Se consume al ejecutarse (no usar sessionStorage: evita carreras con la navegación).
+   */
+  pendientePrestamoSabadellDesdePosicion?: boolean;
 }
 
 @Injectable({
@@ -247,9 +252,37 @@ export class WizardStateService {
 
   setCurrentStep(step: number): void {
     const currentState = this.getCurrentState();
-    this.stateSubject.next({
+    const next: WizardState = {
       ...currentState,
       currentStep: step
+    };
+    if (step !== 3 && currentState.pendientePrestamoSabadellDesdePosicion) {
+      next.pendientePrestamoSabadellDesdePosicion = false;
+    }
+    this.stateSubject.next(next);
+  }
+
+  /**
+   * Navega al paso Préstamos y marca que debe abrirse el flujo Préstamo Sabadell (banner Posición global).
+   */
+  irAPrestamosSabadellDesdePosicionGlobal(): void {
+    const currentState = this.getCurrentState();
+    this.stateSubject.next({
+      ...currentState,
+      currentStep: 3,
+      pendientePrestamoSabadellDesdePosicion: true
+    });
+  }
+
+  /** Quita el flag tras abrir el flujo en el componente Préstamos */
+  clearPendientePrestamoSabadellDesdePosicion(): void {
+    const currentState = this.getCurrentState();
+    if (!currentState.pendientePrestamoSabadellDesdePosicion) {
+      return;
+    }
+    this.stateSubject.next({
+      ...currentState,
+      pendientePrestamoSabadellDesdePosicion: false
     });
   }
 

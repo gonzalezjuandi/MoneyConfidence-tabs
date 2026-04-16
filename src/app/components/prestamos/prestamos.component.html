@@ -1,4 +1,10 @@
 <div class="prestamos-container">
+  <!-- Préstamo Sabadell (no preconcedido): onboarding + pasos propios -->
+  <app-prestamo-sabadell-flow
+    *ngIf="prestamoCocheView === 'sabadell-flow'"
+    (close)="onPrestamoSabadellFlowClose()">
+  </app-prestamo-sabadell-flow>
+
   <!-- Préstamo Coche: Simulación -->
   <app-prestamo-coche-simulacion
     *ngIf="prestamoCocheView === 'simulation'"
@@ -20,6 +26,8 @@
     [loanData]="prestamoCocheData"
     (back)="onPrestamoCocheResumenBack()"
     (next)="onPrestamoCocheResumenNext()"
+    (viewOtherLoans)="onResumenViewOtherLoans()"
+    (goToPosicionGlobal)="onResumenGoToPosicionGlobalFromDecline()"
     (closeRequested)="onCloseRequestedPrestamoCoche()">
   </app-prestamo-coche-resumen>
 
@@ -71,11 +79,11 @@
     (back)="onPrestamoCocheSeguroFirmaBack()">
   </app-prestamo-coche-firma>
 
-  <!-- Préstamo Coche: Loading Final -->
+  <!-- Préstamo Coche: Loading Final (mensaje de seguro solo si contrató seguro) -->
   <app-prestamo-coche-loading
     *ngIf="prestamoCocheView === 'final-loading'"
-    [message]="'Ya tienes contratado el seguro de tu préstamo'"
-    [subtitle]="'En unos días lo cargaremos en tu cuenta.'">
+    [message]="prestamoCocheData?.hasInsurance ? 'Ya tienes contratado el seguro de tu préstamo' : 'Estamos finalizando tu préstamo'"
+    [subtitle]="prestamoCocheData?.hasInsurance ? 'En unos días lo cargaremos en tu cuenta.' : 'Solo te pedimos unos segundos. No cierres esta pantalla.'">
   </app-prestamo-coche-loading>
 
   <!-- Préstamo Coche: Confirmación -->
@@ -109,21 +117,33 @@
   <!-- Vista principal de préstamos -->
   <div class="prestamos-wrapper" *ngIf="prestamoCocheView === 'none'">
     <!-- Header -->
-    <header class="prestamos-header">
-      <button class="header-back-btn" (click)="onVolver()">
-        <i data-lucide="arrow-left" class="w-5 h-5 stroke-[1.5]"></i>
+    <header class="prestamos-header" [class.prestamos-header--list]="view === 'list'">
+      <button type="button" class="prestamos-header-back" (click)="onVolver()" aria-label="Volver">
+        <i data-lucide="chevron-left" class="prestamos-header-chevron"></i>
       </button>
-      <h1 class="header-title">{{ view === 'list' ? 'Préstamos y créditos' : 'Préstamo preconcedido' }}</h1>
+      <h1 class="prestamos-header-heading">
+        {{ view === 'list' ? 'Contratar préstamos' : 'Préstamo preconcedido' }}
+      </h1>
+      <div class="prestamos-header-trail">
+        <button
+          *ngIf="view === 'list'"
+          type="button"
+          class="prestamos-header-chat"
+          aria-label="Chat"
+          (click)="onPrestamosListChat()">
+          <i data-lucide="message-circle" class="prestamos-header-chat-icon"></i>
+        </button>
+      </div>
     </header>
 
     <!-- Vista listado -->
-    <main *ngIf="view === 'list'" class="prestamos-main">
+    <main *ngIf="view === 'list'" class="prestamos-main prestamos-main--list">
       <!-- Sección: Contrátalo online -->
-      <section class="px-5 pt-6">
-        <h2 class="text-lg font-bold text-slate-900 mb-4 tracking-tight">Contrátalo online</h2>
-        
-        <!-- Card Préstamo Aprobado -->
-        <div class="loan-card" (click)="onIrAPrestamoCoche()">
+      <section class="prestamos-section prestamos-section--online">
+        <h2 class="prestamos-section-title">Contrátalo online</h2>
+
+        <!-- Preconcedido: experiencia por defecto -->
+        <div class="loan-card loan-card--elevated" *ngIf="!hidePreconcedidoCard" (click)="onIrAPrestamoCoche()">
           <div class="loan-card-icon loan-card-icon-green">
             <i data-lucide="user-check" class="w-5 h-5 stroke-[1.5]"></i>
           </div>
@@ -131,77 +151,43 @@
             <h3 class="loan-card-title">Laura, tienes un préstamo aprobado de hasta 45.000 €!</h3>
             <p class="loan-card-description">Contrátalo online y recíbelo en menos de 24 horas</p>
             <div class="loan-card-action">
-              <button 
+              <button
                 type="button"
-                class="loan-card-btn loan-card-btn-primary"
-                (click)="onIrAPrestamoCoche(); $event.stopPropagation()"
-              >
+                class="loan-card-btn loan-card-btn-secondary"
+                (click)="onIrAPrestamoCoche(); $event.stopPropagation()">
                 Contratar online
               </button>
             </div>
           </div>
         </div>
 
-        <!-- Card Línea de Crédito -->
-        <div class="loan-card mt-4">
+        <!-- Préstamo Sabadell: si no hay preconcedido o declinó normativa 40% -->
+        <div class="loan-card loan-card--elevated" *ngIf="hidePreconcedidoCard" (click)="onIrAPrestamoSabadell()">
           <div class="loan-card-icon loan-card-icon-green">
-            <i data-lucide="credit-card" class="w-5 h-5 stroke-[1.5]"></i>
+            <i data-lucide="hand-coins" class="w-5 h-5 stroke-[1.5]"></i>
           </div>
           <div class="loan-card-content">
-            <h3 class="loan-card-title">Línea de Crédito Sabadell</h3>
-            <p class="loan-card-description">Tienes hasta 5000 € disponibles para imprevistos</p>
-            <div class="loan-card-actions">
-              <button type="button" class="loan-card-btn loan-card-btn-secondary">
-                Saber más
+            <h3 class="loan-card-title">Préstamo Sabadell</h3>
+            <p class="loan-card-description">Solicita online hasta 30.000 €</p>
+            <div class="loan-card-action">
+              <button
+                type="button"
+                class="loan-card-btn loan-card-btn-secondary"
+                (click)="onIrAPrestamoSabadell(); $event.stopPropagation()">
+                Contratar online
               </button>
-              <button type="button" class="loan-card-btn loan-card-btn-primary">
-                Disponer
-              </button>
             </div>
-          </div>
-        </div>
-      </section>
-
-      <!-- Sección: Otros tipos de préstamos -->
-      <section class="px-5 pt-8">
-        <h2 class="text-lg font-bold text-slate-900 mb-4 tracking-tight">Otros tipos de préstamos</h2>
-        
-        <div class="flex flex-col gap-4">
-          <!-- Préstamo Personal -->
-          <div class="loan-product-card">
-            <div class="loan-product-icon loan-product-icon-green">
-              <i data-lucide="hand-coins" class="w-5 h-5 stroke-[1.5]"></i>
-            </div>
-            <div class="loan-product-content">
-              <h4 class="loan-product-title">Préstamo Personal</h4>
-              <p class="loan-product-description">Hasta 50.000 €. Sin comisión de apertura</p>
-              <p class="loan-product-rate">TIN desde 5,95%</p>
-            </div>
-            <i data-lucide="chevron-right" class="w-5 h-5 text-slate-400"></i>
-          </div>
-
-          <!-- Préstamo Coche -->
-          <div class="loan-product-card" (click)="onIrAPrestamoCoche()">
-            <div class="loan-product-icon loan-product-icon-green">
-              <i data-lucide="car-front" class="w-5 h-5 stroke-[1.5]"></i>
-            </div>
-            <div class="loan-product-content">
-              <h4 class="loan-product-title">Préstamo Coche</h4>
-              <p class="loan-product-description">Financia tu vehículo nuevo o usado</p>
-              <p class="loan-product-rate">TIN desde 4,95%</p>
-            </div>
-            <i data-lucide="chevron-right" class="w-5 h-5 text-slate-400"></i>
           </div>
         </div>
       </section>
 
       <!-- Sección: ¿No encuentras lo que buscas? -->
-      <section class="px-5 pt-8 pb-6">
-        <h2 class="text-lg font-bold text-slate-900 mb-4 tracking-tight">¿No encuentras lo que buscas?</h2>
-        
-        <div class="loan-card">
-          <div class="loan-card-icon loan-card-icon-gray">
-            <i data-lucide="headphones" class="w-5 h-5 stroke-[1.5]"></i>
+      <section class="prestamos-section prestamos-section--help">
+        <h2 class="prestamos-section-title">¿No encuentras lo que buscas?</h2>
+
+        <div class="loan-card loan-card--elevated loan-card--support">
+          <div class="loan-card-icon loan-card-icon-gray loan-card-icon--large">
+            <i data-lucide="headphones" class="w-7 h-7 stroke-[1.5]"></i>
           </div>
           <div class="loan-card-content">
             <h3 class="loan-card-title">Contacta al momento</h3>

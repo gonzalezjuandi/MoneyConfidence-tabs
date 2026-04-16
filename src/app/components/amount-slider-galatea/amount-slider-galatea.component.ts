@@ -1,4 +1,4 @@
-import { Component, Input, Output, EventEmitter, OnInit, AfterViewInit } from '@angular/core';
+import { Component, ElementRef, Input, Output, EventEmitter, OnInit, AfterViewInit } from '@angular/core';
 
 declare var lucide: any;
 
@@ -8,6 +8,7 @@ declare var lucide: any;
   styleUrls: ['./amount-slider-galatea.component.scss']
 })
 export class AmountSliderGalateaComponent implements OnInit, AfterViewInit {
+  constructor(private hostEl: ElementRef<HTMLElement>) {}
   @Input() label?: string;
   @Input() labelOptional = false;
   @Input() value = 9000;
@@ -27,11 +28,16 @@ export class AmountSliderGalateaComponent implements OnInit, AfterViewInit {
   @Input() linkTarget?: string;
   @Input() mainTitle?: string;
   @Input() inputLabel?: string;
+  /** Muestra botón limpiar (X) junto al importe */
+  @Input() showClear = false;
+  /** Caja importe (subetiqueta + valor) con altura total 56px, sin gap entre filas — p. ej. simulador Préstamo Sabadell */
+  @Input() compactFieldBox = false;
   @Input() bsAriaDescribedBy?: string;
   @Input() notificationCloseAriaLabel = 'Cerrar notificación';
 
   @Output() valueChange = new EventEmitter<number>();
   @Output() error = new EventEmitter<string>();
+  @Output() clear = new EventEmitter<void>();
 
   isEditing = false;
   errorMessage: string | null = null;
@@ -55,10 +61,11 @@ export class AmountSliderGalateaComponent implements OnInit, AfterViewInit {
   }
   
   private updateSliderProgress(): void {
-    // Calcular el porcentaje de progreso para el fill visual
     const progress = ((this.value - this.minValue) / (this.maxValue - this.minValue)) * 100;
     setTimeout(() => {
-      const wrapper = document.querySelector('.custom-slider-wrapper') as HTMLElement;
+      const wrapper = this.hostEl.nativeElement.querySelector(
+        '.custom-slider-wrapper'
+      ) as HTMLElement | null;
       if (wrapper) {
         wrapper.style.setProperty('--progress', `${progress}%`);
       }
@@ -110,12 +117,19 @@ export class AmountSliderGalateaComponent implements OnInit, AfterViewInit {
     this.inputValue = this.value.toString();
   }
 
+  onClearClick(): void {
+    this.validateAndUpdate(this.minValue);
+    this.clear.emit();
+  }
+
   onEditValue(): void {
     if (this.editable) {
       this.isEditing = true;
       this.isInputFocused = true;
       setTimeout(() => {
-        const input = document.getElementById('galatea-amount-input') as HTMLInputElement;
+        const input = this.hostEl.nativeElement.querySelector(
+          '.galatea-amount-input'
+        ) as HTMLInputElement | null;
         if (input) {
           input.focus();
           input.select();

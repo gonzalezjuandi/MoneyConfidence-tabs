@@ -8,6 +8,8 @@ import {
   combineUpcomingAndSubscriptions30d
 } from '../../services/wizard-state.service';
 
+import { isPreconcedidoEntryBlocked } from '../../constants/prestamo-preconcedido-entry';
+
 declare var lucide: any;
 
 const INITIAL_30D_COMBINED = combineUpcomingAndSubscriptions30d(
@@ -44,8 +46,6 @@ export class PosicionGlobalComponent implements AfterViewInit, OnDestroy, OnInit
   showLoanMovement = false;
   lastLoanAmount: number | null = null;
 
-  /** Tarjeta resumen: saldo total vs próximos pagos (entry point) */
-  posicionCardView: 'total' | 'upcoming' = 'total';
   upcomingPaymentsTotal = INITIAL_30D_COMBINED.total;
   /** Alineado con la lista de Próximos pagos (wizard state) */
   upcomingPaymentsCount = INITIAL_30D_COMBINED.count;
@@ -132,15 +132,6 @@ export class PosicionGlobalComponent implements AfterViewInit, OnDestroy, OnInit
     );
   }
 
-  /** Pestaña inactiva: resumen del otro modo (referencia diseño tabs) */
-  get balanceTabHintSaldo(): string {
-    return '(' + this.saldoTotalFormatted + ' €)';
-  }
-
-  get balanceTabHintUpcoming(): string {
-    return '(' + this.upcomingOutflowFormatted + ')';
-  }
-
   get upcomingPaymentsCountLabel(): string {
     const c = this.upcomingPaymentsItems.length;
     return c === 1 ? '1 pago' : `${c} pagos`;
@@ -199,7 +190,6 @@ export class PosicionGlobalComponent implements AfterViewInit, OnDestroy, OnInit
       this.showLoanMovement = !!state.loanCompleted && !!state.loanAmount;
       this.lastLoanAmount = state.loanAmount ?? null;
 
-      this.posicionCardView = state.posicionGlobalCardView ?? 'total';
       if (state.recurringSubscriptionItems?.length) {
         this.recurringSubscriptionItems = [...state.recurringSubscriptionItems];
       }
@@ -336,23 +326,25 @@ export class PosicionGlobalComponent implements AfterViewInit, OnDestroy, OnInit
     // En este caso ya estamos en el inicio, pero podría navegar a otra sección
   }
 
+  get showPreconcedidoEntryBanner(): boolean {
+    return !isPreconcedidoEntryBlocked();
+  }
+
+  /** Banner sustituto (Préstamo Online Sabadell) cuando no aplica el entry del preconcedido */
+  get showSabadellEntryBanner(): boolean {
+    return isPreconcedidoEntryBlocked();
+  }
+
   onIrAPrestamoPreconcedido(): void {
-    // Ir directamente al proceso de préstamo con seguro (onboarding → simulación → documentación → firma)
+    if (isPreconcedidoEntryBlocked()) {
+      return;
+    }
     this.wizardState.setCurrentStep(3);
     sessionStorage.setItem('from-prestamo-modal', 'true');
   }
 
-  selectBalanceTab(view: 'total' | 'upcoming'): void {
-    if (this.posicionCardView === view) {
-      return;
-    }
-    this.wizardState.setPosicionGlobalCardView(view);
-    this.cdr.markForCheck();
-    setTimeout(() => this.initializeIcons(), 80);
-  }
-
-  onGestionarGastos(): void {
-    this.wizardState.setEntryScreen('proximos-pagos');
+  onIrAPrestamoSabadellDesdePosicion(): void {
+    this.wizardState.irAPrestamosSabadellDesdePosicionGlobal();
   }
 
   setAccountsMovementTab(tab: 'todos' | 'proximos'): void {

@@ -1,6 +1,7 @@
 import { Component, EventEmitter, Output, AfterViewInit, Input, OnInit, OnDestroy } from '@angular/core';
 import { ViewportScroller } from '@angular/common';
 import { PRESTAMO_FAQS, SEGURO_FAQS } from '../../constants/prestamo-coche-faq';
+import { markPreconcedidoNormativaRechazado } from '../../constants/prestamo-preconcedido-entry';
 
 declare var lucide: any;
 
@@ -35,6 +36,10 @@ export class PrestamoCocheResumenComponent implements OnInit, AfterViewInit, OnD
   @Output() back = new EventEmitter<void>();
   @Output() next = new EventEmitter<void>();
   @Output() closeRequested = new EventEmitter<void>();
+  /** Tras rechazo normativo: ir al listado (p. ej. Préstamo Digital Sabadell) */
+  @Output() viewOtherLoans = new EventEmitter<void>();
+  /** Tras rechazo normativo: volver a Posición Global */
+  @Output() goToPosicionGlobal = new EventEmitter<void>();
 
   constructor(private viewportScroller: ViewportScroller) {}
 
@@ -83,6 +88,16 @@ export class PrestamoCocheResumenComponent implements OnInit, AfterViewInit, OnD
   showDocumentViewer = false;
   documentZoom = 100;
 
+
+  /** Bottom sheet normativo antes de continuar a documentación */
+  showRegulatoryModal = false;
+  /** 1 = pregunta 40%; 2 = confirmación si marca «no» */
+  regulatoryModalStep: 1 | 2 = 1;
+  /** Pantalla final: préstamo no disponible (cuota > 40%) */
+  showLoanUnavailableScreen = false;
+  /** Tras «Ver otros préstamos»: spinner antes de abrir simulación de otro producto */
+  showOtherProductRedirectSpinner = false;
+  private otherProductRedirectTimer: ReturnType<typeof setTimeout> | null = null;
 
   // Modal FAQs
   showFaqModal = false;
@@ -144,6 +159,13 @@ export class PrestamoCocheResumenComponent implements OnInit, AfterViewInit, OnD
 
   ngOnDestroy(): void {
     document.removeEventListener('click', this.closeDropdowns.bind(this));
+    if (this.otherProductRedirectTimer) {
+      clearTimeout(this.otherProductRedirectTimer);
+      this.otherProductRedirectTimer = null;
+    }
+    if (this.showRegulatoryModal || this.showLoanUnavailableScreen || this.showOtherProductRedirectSpinner) {
+      document.body.style.overflow = '';
+    }
   }
 
   private closeDropdowns(event: MouseEvent): void {
@@ -151,6 +173,7 @@ export class PrestamoCocheResumenComponent implements OnInit, AfterViewInit, OnD
     if (!target.closest('.resumen-item-dropdown')) {
       this.showAccountDropdown = false;
       this.showBeneficiaryDropdown = false;
+      this.showLoanPurposeDropdown = false;
     }
   }
 
@@ -305,9 +328,72 @@ export class PrestamoCocheResumenComponent implements OnInit, AfterViewInit, OnD
     }
   }
 
-  onNext(): void {
-    // Emitir evento directamente - el loading se maneja en el componente padre
+  openRegulatoryModal(): void {
+    this.regulatoryModalStep = 1;
+    this.showRegulatoryModal = true;
+    document.body.style.overflow = 'hidden';
+    if (typeof lucide !== 'undefined') {
+      setTimeout(() => lucide.createIcons(), 0);
+    }
+  }
+
+  closeRegulatoryModal(): void {
+    this.showRegulatoryModal = false;
+    this.regulatoryModalStep = 1;
+    document.body.style.overflow = '';
+  }
+
+  confirmRegulatoryYes(): void {
+    this.closeRegulatoryModal();
     this.next.emit();
+  }
+
+  /** Paso 1: usuario indica que no puede asumirlo → paso de confirmación */
+  confirmRegulatoryNo(): void {
+    this.regulatoryModalStep = 2;
+    if (typeof lucide !== 'undefined') {
+      setTimeout(() => lucide.createIcons(), 0);
+    }
+  }
+
+  /** Paso 2: vuelve a la pregunta principal */
+  backToRegulatoryQuestion(): void {
+    this.regulatoryModalStep = 1;
+    if (typeof lucide !== 'undefined') {
+      setTimeout(() => lucide.createIcons(), 0);
+    }
+  }
+
+  /** Paso 2: confirma que no puede → pantalla de no disponible */
+  confirmDeclineFinal(): void {
+    markPreconcedidoNormativaRechazado();
+    this.showRegulatoryModal = false;
+    this.regulatoryModalStep = 1;
+    this.showLoanUnavailableScreen = true;
+    document.body.style.overflow = 'hidden';
+    if (typeof lucide !== 'undefined') {
+      setTimeout(() => lucide.createIcons(), 0);
+    }
+  }
+
+  onViewOtherLoansFromUnavailable(): void {
+    if (this.otherProductRedirectTimer) {
+      clearTimeout(this.otherProductRedirectTimer);
+    }
+    this.showOtherProductRedirectSpinner = true;
+    this.otherProductRedirectTimer = setTimeout(() => {
+      this.otherProductRedirectTimer = null;
+      this.showOtherProductRedirectSpinner = false;
+      this.showLoanUnavailableScreen = false;
+      document.body.style.overflow = '';
+      this.viewOtherLoans.emit();
+    }, 2800);
+  }
+
+  onGoToPosicionGlobalFromUnavailable(): void {
+    this.showLoanUnavailableScreen = false;
+    document.body.style.overflow = '';
+    this.goToPosicionGlobal.emit();
   }
 
   showSuccessToastNotification(): void {
@@ -375,6 +461,14 @@ export class PrestamoCocheResumenComponent implements OnInit, AfterViewInit, OnD
       minimumFractionDigits: 2,
       maximumFractionDigits: 2
     });
+  }
+
+  get tinFormatted(): string {
+    return this.data.tin.toFixed(2).replace('.', ',');
+  }
+
+  get taeFormatted(): string {
+    return this.data.tae.toFixed(2).replace('.', ',');
   }
 
   get termYears(): number {

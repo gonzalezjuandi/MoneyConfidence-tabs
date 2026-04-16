@@ -1,4 +1,4 @@
-<div class="posicion-global-container" data-pg-balance-ui="tabs">
+<div class="posicion-global-container" data-pg-balance-ui="saldo-total">
   <!-- Main App Container -->
   <div class="app-wrapper" *ngIf="view === 'dashboard'">
     
@@ -20,63 +20,26 @@
       </div>
     </header>
 
-    <!-- Saldo / próximos: pestañas (referencia) + contenido -->
-    <div class="px-6 pt-2 pb-6 text-center">
-      <!-- balance-swipe-inner: bloque hero saldo / próximos (pestañas; sustituye swipe + píldora) -->
+    <!-- Hero: solo saldo total + ahorrado/invertido (centrado) -->
+    <div class="px-6 pg-balance-section text-center">
       <div class="balance-swipe-inner pg-balance-stack">
-        <div class="pg-balance-tabs" role="tablist" aria-label="Resumen de cuenta">
-          <button
-            type="button"
-            role="tab"
-            class="pg-balance-tab"
-            [class.pg-balance-tab--active]="posicionCardView === 'total'"
-            [attr.aria-selected]="posicionCardView === 'total'"
-            (click)="selectBalanceTab('total')"
-          >
-            <span class="pg-balance-tab-title">Tu saldo total</span>
-            <span class="pg-balance-tab-hint" *ngIf="posicionCardView !== 'total'">{{ balanceTabHintSaldo }}</span>
-          </button>
-          <button
-            type="button"
-            role="tab"
-            class="pg-balance-tab"
-            [class.pg-balance-tab--active]="posicionCardView === 'upcoming'"
-            [attr.aria-selected]="posicionCardView === 'upcoming'"
-            (click)="selectBalanceTab('upcoming')"
-          >
-            <span class="pg-balance-tab-title">Próximos pagos</span>
-            <span class="pg-balance-tab-hint" *ngIf="posicionCardView !== 'upcoming'">{{ balanceTabHintUpcoming }}</span>
-          </button>
-        </div>
-
-        <div class="balance-hero-stage balance-hero-stage--tabs">
-          <ng-container *ngIf="posicionCardView === 'total'">
-            <h1 class="balance-hero-numeric text-4xl text-gray-900 font-normal tracking-tight">
-              {{ saldoTotalFormatted }} €
-            </h1>
-            <div class="balance-hero-sub">
-              <p class="balance-hero-ahorrado">
-                Ahorrado/invertido:
-                <span class="balance-hero-ahorrado-amt">{{ ahorradoInvertidoFormatted }} €</span>
-              </p>
-            </div>
-          </ng-container>
-          <ng-container *ngIf="posicionCardView === 'upcoming'">
-            <h1 class="balance-hero-numeric text-4xl text-gray-900 font-normal tracking-tight">
-              {{ upcomingTotalFormatted }} €
-            </h1>
-            <div class="balance-hero-sub balance-hero-sub--link">
-              <button type="button" class="balance-manage-pill" (click)="onGestionarGastos()">
-                Gestionar gastos
-              </button>
-            </div>
-          </ng-container>
+        <div class="balance-hero-stage balance-hero-stage--solo">
+          <p class="balance-hero-kicker">Saldo total</p>
+          <h1 class="balance-hero-numeric balance-hero-numeric--primary">
+            {{ saldoTotalFormatted }} €
+          </h1>
+          <div class="balance-hero-sub">
+            <p class="balance-hero-ahorrado">
+              <span class="balance-hero-ahorrado-label">Ahorrado/invertido:</span>
+              <span class="balance-hero-ahorrado-amt">{{ ahorradoInvertidoFormatted }} €</span>
+            </p>
+          </div>
         </div>
       </div>
     </div>
 
-    <!-- Acciones rápidas según pestaña (referencia) -->
-    <div class="px-4" *ngIf="posicionCardView === 'total'">
+    <!-- Acciones rápidas -->
+    <div class="px-4">
       <div class="grid grid-cols-4 gap-2">
         <button type="button" class="quick-action-btn flex flex-col items-center gap-2 group">
           <div class="quick-action-icon">
@@ -95,28 +58,6 @@
             <i data-lucide="banknote" class="w-[22px] h-[22px]"></i>
           </div>
           <span class="quick-action-label">Sacar<br />dinero</span>
-        </button>
-        <button type="button" class="quick-action-btn flex flex-col items-center gap-2 group">
-          <div class="quick-action-icon">
-            <i data-lucide="credit-card" class="w-[22px] h-[22px]"></i>
-          </div>
-          <span class="quick-action-label">Límites de<br />tarjeta</span>
-        </button>
-      </div>
-    </div>
-    <div class="px-4" *ngIf="posicionCardView === 'upcoming'">
-      <div class="grid grid-cols-3 gap-2">
-        <button type="button" class="quick-action-btn flex flex-col items-center gap-2 group">
-          <div class="quick-action-icon">
-            <i data-lucide="smartphone" class="w-[22px] h-[22px]"></i>
-          </div>
-          <span class="quick-action-label">Solicitar<br />Bizum</span>
-        </button>
-        <button type="button" class="quick-action-btn flex flex-col items-center gap-2 group">
-          <div class="quick-action-icon">
-            <i data-lucide="piggy-bank" class="w-[22px] h-[22px]"></i>
-          </div>
-          <span class="quick-action-label">Traspaso desde<br />ahorro</span>
         </button>
         <button type="button" class="quick-action-btn flex flex-col items-center gap-2 group">
           <div class="quick-action-icon">
@@ -163,7 +104,7 @@
             </div>
           </div>
           <span class="text-lg font-normal text-gray-900 tracking-tight">
-            {{ saldoCuentaPrincipalFormatted }}
+            {{ saldoCuentaPrincipalFormatted }} €
           </span>
         </button>
 
@@ -184,17 +125,40 @@
             </div>
           </div>
           <span class="text-lg font-normal text-gray-900 tracking-tight">
-            {{ saldoCuentaFamiliarFormatted }}
+            {{ saldoCuentaFamiliarFormatted }} €
           </span>
         </button>
 
-        <!-- Promo Banner (a sangre) -->
-        <div class="promo-banner-bleed bg-[#CCECDA] rounded-t-none rounded-b-2xl py-3 px-5 flex justify-between items-center cursor-pointer hover:bg-[#c0e0ce] transition-colors" (click)="onIrAPrestamoPreconcedido()">
+        <!-- Promo preconcedido (a sangre); oculto si KO normativo -->
+        <div
+          *ngIf="showPreconcedidoEntryBanner"
+          class="promo-banner-bleed bg-[#CCECDA] rounded-t-none rounded-b-2xl py-3 px-5 flex justify-between items-center cursor-pointer hover:bg-[#c0e0ce] transition-colors"
+          (click)="onIrAPrestamoPreconcedido()">
           <div>
             <p class="text-sm font-semibold text-gray-900 mb-0.5">¿Quieres hasta 45.000 € de financiación?</p>
             <p class="text-sm text-gray-900">100% online, preaprobado y sin papeleo.</p>
           </div>
           <i data-lucide="chevron-right" class="w-4 h-4 text-gray-900"></i>
+        </div>
+
+        <!-- Préstamo Sabadell (a sangre): sustituye al preconcedido cuando la experiencia no puede mostrarlo -->
+        <div
+          *ngIf="showSabadellEntryBanner"
+          class="promo-banner-bleed bg-[#D1EAD8] rounded-t-none rounded-b-2xl py-3 px-5 flex justify-between items-center cursor-pointer hover:bg-[#c2e4cc] transition-colors"
+          (click)="onIrAPrestamoSabadellDesdePosicion()"
+          role="button"
+          tabindex="0"
+          (keydown.enter)="onIrAPrestamoSabadellDesdePosicion()"
+          (keydown.space)="$event.preventDefault(); onIrAPrestamoSabadellDesdePosicion()"
+          [attr.aria-label]="'Préstamo Online Sabadell. Hasta 30.000 euros sin salir de casa'"
+        >
+          <div class="pr-2 min-w-0">
+            <p class="text-base font-bold text-gray-900 mb-0.5 leading-snug">
+              Hasta 30.000,00 € sin salir de casa
+            </p>
+            <p class="text-sm font-normal text-gray-900">Solicita el Préstamo Online Sabadell.</p>
+          </div>
+          <i data-lucide="chevron-right" class="w-4 h-4 text-gray-900 shrink-0" aria-hidden="true"></i>
         </div>
       </div>
 

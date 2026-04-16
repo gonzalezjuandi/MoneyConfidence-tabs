@@ -5,7 +5,11 @@
 const { execSync } = require('child_process');
 
 const ref = process.env.VERCEL_GIT_COMMIT_REF || '';
-const useV2 = ref === 'V2' || ref === 'MoneyConfidence-v2';
+/** Rama Git `v2` (Vercel envía el nombre tal cual) o nombres legacy */
+const useV2 =
+  ref === 'v2' ||
+  ref === 'V2' ||
+  ref === 'MoneyConfidence-v2';
 
 const cmd = useV2 ? 'npm run build:v2' : 'npm run build:v1';
 

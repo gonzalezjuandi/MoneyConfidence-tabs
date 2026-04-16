@@ -26,6 +26,7 @@ import { PrestamoCocheFirmaComponent } from './components/prestamo-coche-firma/p
 import { PrestamoCocheSeguroDocumentManagerComponent } from './components/prestamo-coche-seguro-document-manager/prestamo-coche-seguro-document-manager.component';
 import { PrestamoCocheLoadingComponent } from './components/prestamo-coche-loading/prestamo-coche-loading.component';
 import { PrestamoCocheConfirmacionComponent } from './components/prestamo-coche-confirmacion/prestamo-coche-confirmacion.component';
+import { PrestamoSabadellFlowComponent } from './components/prestamo-sabadell-flow/prestamo-sabadell-flow.component';
 import { PostLoginFlowComponent } from './components/post-login-flow/post-login-flow.component';
 import { NotificationLockComponent } from './components/notification-lock/notification-lock.component';
 import { LoginFlowComponent } from './components/login-flow/login-flow.component';
@@ -65,7 +66,8 @@ import { UpcomingPaymentBrandLogoComponent } from './components/upcoming-payment
     PrestamoCocheFirmaComponent,
     PrestamoCocheSeguroDocumentManagerComponent,
     PrestamoCocheLoadingComponent,
-    PrestamoCocheConfirmacionComponent
+    PrestamoCocheConfirmacionComponent,
+    PrestamoSabadellFlowComponent
   ],
   imports: [
     BrowserModule,

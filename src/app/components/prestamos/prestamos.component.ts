@@ -1,5 +1,6 @@
 import { Component, EventEmitter, Output, AfterViewInit, OnInit, ViewChild, ElementRef } from '@angular/core';
 import { WizardStateService } from '../../services/wizard-state.service';
+import { isPreconcedidoEntryBlocked } from '../../constants/prestamo-preconcedido-entry';
 import { Observable } from 'rxjs';
 import { WizardState } from '../../services/wizard-state.service';
 
@@ -21,8 +22,20 @@ export class PrestamosComponent implements AfterViewInit, OnInit {
   // Vista interna: listado o simulación
   view: 'list' | 'simulation' = 'list';
   
-  // Vista para Préstamo Coche
-  prestamoCocheView: 'none' | 'simulation' | 'resumen' | 'document-loading' | 'document-manager' | 'firma' | 'seguro-loading' | 'seguro-document-manager' | 'seguro-firma' | 'final-loading' | 'confirmacion' = 'none';
+  // Vista para Préstamo Coche; 'sabadell-flow' = flujo Préstamo Sabadell (no preconcedido)
+  prestamoCocheView:
+    | 'none'
+    | 'sabadell-flow'
+    | 'simulation'
+    | 'resumen'
+    | 'document-loading'
+    | 'document-manager'
+    | 'firma'
+    | 'seguro-loading'
+    | 'seguro-document-manager'
+    | 'seguro-firma'
+    | 'final-loading'
+    | 'confirmacion' = 'none';
   showPrestamoCocheOnboarding = false;
   
   // Datos del préstamo para pasar al resumen
@@ -63,6 +76,9 @@ export class PrestamosComponent implements AfterViewInit, OnInit {
 
   // Modal confirmación salir del flujo préstamo con seguro
   showExitConfirmModal = false;
+
+  /** Tras declinar por normativa 40%, el listado muestra Préstamo Digital en lugar del preconcedido */
+  hidePreconcedidoCard = false;
   
   // Formulario de préstamo reactivo
   reactiveLoanForm = {
@@ -86,6 +102,9 @@ export class PrestamosComponent implements AfterViewInit, OnInit {
   }
 
   ngOnInit(): void {
+    if (isPreconcedidoEntryBlocked()) {
+      this.hidePreconcedidoCard = true;
+    }
     this.state$.subscribe(state => {
       const previousHasUpdated = this.hasUpdatedPotential;
       this.hasUpdatedPotential = state.hasUpdatedPotential || false;
@@ -101,14 +120,25 @@ export class PrestamosComponent implements AfterViewInit, OnInit {
         }
       }
 
+      if (isPreconcedidoEntryBlocked()) {
+        this.hidePreconcedidoCard = true;
+      }
+
       // Si viene del modal de Contratar o del banner "45.000 € al instante", abrir el flujo de préstamo con seguro (onboarding)
       if (state.currentStep === 3 && this.view === 'list') {
         const fromModal = sessionStorage.getItem('from-prestamo-modal');
-        if (fromModal === 'true') {
+        if (fromModal === 'true' && !isPreconcedidoEntryBlocked()) {
           sessionStorage.removeItem('from-prestamo-modal');
           setTimeout(() => {
             this.onIrAPrestamoCoche();
           }, 100);
+        } else if (fromModal === 'true') {
+          sessionStorage.removeItem('from-prestamo-modal');
+        } else if (state.pendientePrestamoSabadellDesdePosicion) {
+          this.wizardState.clearPendientePrestamoSabadellDesdePosicion();
+          setTimeout(() => {
+            this.onIrAPrestamoSabadell();
+          }, 0);
         }
       }
     });
@@ -307,6 +337,11 @@ export class PrestamosComponent implements AfterViewInit, OnInit {
 
   onVolver(): void {
     this.previous.emit();
+  }
+
+  /** Chat en cabecera del listado «Contratar préstamos» (extensible a canal de ayuda) */
+  onPrestamosListChat(): void {
+    // Integración con chat / FAQ cuando exista flujo definido
   }
 
   onAmountChange(event: Event): void {
@@ -675,6 +710,21 @@ export class PrestamosComponent implements AfterViewInit, OnInit {
   }
 
   // Métodos para Préstamo Coche
+  /** Entrada desde la tarjeta «Préstamo Sabadell» (flujo manual: onboarding → simulación propia) */
+  onIrAPrestamoSabadell(): void {
+    this.prestamoCocheView = 'sabadell-flow';
+    if (typeof lucide !== 'undefined') {
+      setTimeout(() => lucide.createIcons(), 0);
+    }
+  }
+
+  onPrestamoSabadellFlowClose(): void {
+    this.prestamoCocheView = 'none';
+    if (typeof lucide !== 'undefined') {
+      setTimeout(() => lucide.createIcons(), 0);
+    }
+  }
+
   onIrAPrestamoCoche(): void {
     this.prestamoCocheView = 'simulation';
     this.showPrestamoCocheOnboarding = true;
@@ -749,6 +799,22 @@ export class PrestamosComponent implements AfterViewInit, OnInit {
         lucide.createIcons();
       }, 100);
     }
+  }
+
+  /** Desde resumen: tras spinner → simulación de otro producto (sin pasar por listado; sin onboarding preconcedido) */
+  onResumenViewOtherLoans(): void {
+    this.hidePreconcedidoCard = true;
+    this.showPrestamoCocheOnboarding = false;
+    this.prestamoCocheView = 'simulation';
+    this.initializeIcons();
+  }
+
+  /** Desde resumen: usuario declina y va a Posición Global */
+  onResumenGoToPosicionGlobalFromDecline(): void {
+    this.hidePreconcedidoCard = true;
+    this.prestamoCocheView = 'none';
+    this.wizardState.setCurrentStep(1);
+    this.initializeIcons();
   }
 
   onPrestamoCocheResumenNext(): void {

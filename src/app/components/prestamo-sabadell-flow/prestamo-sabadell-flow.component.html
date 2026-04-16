@@ -1,0 +1,1154 @@
+<div class="sabadell-flow-container" role="document">
+  <div class="sabadell-flow-wrapper">
+    <!-- Cabecera onboarding -->
+    <header *ngIf="step === 0" class="prestamo-wizard-header">
+      <div class="prestamo-wizard-header__start">
+        <button type="button" class="prestamo-wizard-header__back" (click)="onBack()" aria-label="Volver">
+          <i data-lucide="arrow-left" class="prestamo-wizard-header__back-icon w-4 h-4 stroke-[1.5]"></i>
+        </button>
+      </div>
+      <h1 class="prestamo-wizard-header__title">Solicitar préstamo</h1>
+      <div class="prestamo-wizard-header__actions">
+        <button type="button" class="prestamo-wizard-header__icon-btn" aria-label="Ayuda" (click)="onAyuda()">
+          <img
+            class="prestamo-wizard-header__icon"
+            src="assets/icons/prestamo-ayuda-icon.png"
+            width="26"
+            height="26"
+            alt=""
+            decoding="async" />
+        </button>
+        <button type="button" class="prestamo-wizard-header__icon-btn" aria-label="Cerrar" (click)="onCloseRequest()">
+          <img
+            class="prestamo-wizard-header__icon"
+            src="assets/icons/prestamo-cerrar-icon.png"
+            width="26"
+            height="26"
+            alt=""
+            decoding="async" />
+        </button>
+      </div>
+    </header>
+
+    <!-- Cabecera simulación: barra de progreso en la última fila del header (pegada al borde inferior) -->
+    <div *ngIf="step === 1" class="sabadell-sim-header-wrap">
+      <header class="prestamo-wizard-header prestamo-wizard-header--sabadell-sim">
+        <div class="prestamo-wizard-header__start">
+          <button type="button" class="prestamo-wizard-header__back" (click)="onBack()" aria-label="Volver">
+            <i data-lucide="arrow-left" class="prestamo-wizard-header__back-icon w-4 h-4 stroke-[1.5]"></i>
+          </button>
+        </div>
+        <h1 class="prestamo-wizard-header__title">Simulación Préstamo</h1>
+        <div class="prestamo-wizard-header__actions">
+          <button type="button" class="prestamo-wizard-header__icon-btn" aria-label="Chat" (click)="onChatSimulation()">
+            <i data-lucide="message-circle" class="sabadell-sim-header-lucide"></i>
+          </button>
+          <button type="button" class="prestamo-wizard-header__icon-btn" aria-label="Cerrar" (click)="onCloseRequest()">
+            <img
+              class="prestamo-wizard-header__icon"
+              src="assets/icons/prestamo-cerrar-icon.png"
+              width="26"
+              height="26"
+              alt=""
+              decoding="async" />
+          </button>
+        </div>
+      </header>
+      <!-- Barra a ancho completo (borde a borde), debajo de la fila del título -->
+      <div
+        class="sabadell-sim-progress"
+        role="progressbar"
+        [attr.aria-valuenow]="progressActiveSegments"
+        [attr.aria-valuemax]="simulationTotalSteps"
+        aria-label="Progreso de la simulación">
+        <span
+          *ngFor="let _ of [1, 2, 3, 4, 5]; index as i"
+          class="sabadell-sim-progress-seg"
+          [class.sabadell-sim-progress-seg--active]="i < progressActiveSegments"></span>
+      </div>
+    </div>
+
+    <!-- Paso 0: onboarding -->
+    <main *ngIf="step === 0" class="sabadell-flow-main sabadell-flow-main--with-footer">
+      <section class="sabadell-flow-section">
+        <h2 class="sabadell-flow-section-title">Solicita tu préstamo en 4 pasos</h2>
+        <ol class="sabadell-flow-steps">
+          <li *ngFor="let s of steps; index as i" class="sabadell-flow-step">
+            <div class="sabadell-flow-step-icon" aria-hidden="true">
+              <i [attr.data-lucide]="s.icon" class="sabadell-flow-step-lucide"></i>
+            </div>
+            <div class="sabadell-flow-step-body">
+              <p class="sabadell-flow-step-title">{{ s.title }}</p>
+              <p class="sabadell-flow-step-text">{{ s.text }}</p>
+            </div>
+          </li>
+        </ol>
+      </section>
+
+      <section class="sabadell-flow-cta-block">
+        <p class="sabadell-flow-cta-lead">
+          ¡Hasta 30.000 euros para la finalidad que elijas en un proceso 100% online!
+        </p>
+        <p class="sabadell-flow-cta-note">
+          Para las comunicaciones y la firma necesitamos que tengas actualizados tu correo electrónico y tu teléfono móvil en el banco.
+        </p>
+      </section>
+
+      <section class="sabadell-flow-faq" aria-labelledby="sabadell-faq-heading">
+        <h2 id="sabadell-faq-heading" class="sabadell-flow-faq-heading">
+          Respondemos tus preguntas más frecuentes
+        </h2>
+        <div class="sabadell-flow-faq-list">
+          <div *ngFor="let item of visibleFaqs; index as i" class="sabadell-flow-faq-item">
+            <button
+              type="button"
+              class="sabadell-flow-faq-trigger"
+              [attr.aria-expanded]="expandedFaqIndex === i"
+              (click)="toggleFaq(i)"
+            >
+              <span class="sabadell-flow-faq-q">{{ item.question }}</span>
+              <i
+                data-lucide="chevron-down"
+                class="sabadell-flow-faq-chevron"
+                [class.sabadell-flow-faq-chevron--open]="expandedFaqIndex === i"
+              ></i>
+            </button>
+            <div *ngIf="expandedFaqIndex === i" class="sabadell-flow-faq-panel">
+              <ul *ngIf="item.answerParagraphs.length > 1" class="sabadell-flow-faq-bullets">
+                <li *ngFor="let line of item.answerParagraphs">{{ line }}</li>
+              </ul>
+              <p *ngIf="item.answerParagraphs.length === 1" class="sabadell-flow-faq-answer">
+                {{ item.answerParagraphs[0] }}
+              </p>
+            </div>
+          </div>
+        </div>
+        <button
+          *ngIf="!showExtraFaqs && faqs.length > 4"
+          type="button"
+          class="sabadell-flow-btn-outline"
+          (click)="toggleVerMasPreguntas()"
+        >
+          <i data-lucide="plus" class="sabadell-flow-plus"></i>
+          Ver más preguntas
+        </button>
+        <button
+          *ngIf="showExtraFaqs"
+          type="button"
+          class="sabadell-flow-btn-outline"
+          (click)="toggleVerMasPreguntas()"
+        >
+          Ver menos
+        </button>
+      </section>
+    </main>
+
+    <!-- Paso 1: simular préstamo (5 pasos totales en el asistente) -->
+    <main *ngIf="step === 1" class="sabadell-flow-main sabadell-flow-main--sim-with-footer">
+      <div class="sabadell-sim-meta-row">
+        <span class="sabadell-sim-meta-step"
+          >Paso {{ simulationAssistantStep }} de {{ simulationTotalSteps }}</span
+        >
+        <button type="button" class="sabadell-sim-link-progress" (click)="toggleProgressModal()">Ver progreso</button>
+      </div>
+
+      <ng-container *ngIf="simulationPhase === 'datos'">
+      <h2 class="sabadell-sim-page-title">Simular préstamo</h2>
+
+      <div class="sabadell-sim-field">
+        <label class="sabadell-sim-label" id="sabadell-finalidad-label">¿Cuál es la finalidad de tu préstamo?</label>
+        <div class="sabadell-finalidad-dropdown">
+          <button
+            type="button"
+            id="sabadell-finalidad-trigger"
+            class="sabadell-finalidad-trigger"
+            [class.sabadell-finalidad-trigger--open]="finalidadDropdownOpen"
+            [attr.aria-expanded]="finalidadDropdownOpen"
+            aria-haspopup="listbox"
+            aria-controls="sabadell-finalidad-listbox"
+            (click)="toggleFinalidadDropdown($event)"
+          >
+            <span
+              class="sabadell-finalidad-trigger-text"
+              [class.sabadell-finalidad-trigger-text--placeholder]="finalidad === ''"
+            >
+              {{ finalidad === '' ? 'Finalidad' : getFinalidadLabel() }}
+            </span>
+            <i
+              [attr.data-lucide]="finalidadDropdownOpen ? 'chevron-up' : 'chevron-down'"
+              class="sabadell-finalidad-trigger-chevron"
+              aria-hidden="true"
+            ></i>
+          </button>
+          <div
+            *ngIf="finalidadDropdownOpen"
+            id="sabadell-finalidad-listbox"
+            class="sabadell-finalidad-panel"
+            role="listbox"
+            [attr.aria-labelledby]="'sabadell-finalidad-label'"
+          >
+            <button
+              type="button"
+              *ngFor="let o of finalidadOptions"
+              role="option"
+              class="sabadell-finalidad-option"
+              [class.sabadell-finalidad-option--selected]="finalidad === o.value"
+              [attr.aria-selected]="finalidad === o.value"
+              (click)="selectFinalidad(o, $event)"
+            >
+              <span class="sabadell-finalidad-option-label">{{ o.label }}</span>
+              <i
+                *ngIf="finalidad === o.value"
+                data-lucide="check"
+                class="sabadell-finalidad-check"
+                aria-hidden="true"
+              ></i>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div class="sabadell-sim-field">
+        <label class="sabadell-sim-label" for="sabadell-precio">¿Cuál es el precio total del bien?</label>
+        <div
+          class="sabadell-sim-precio-box"
+          [class.sabadell-sim-precio-box--empty]="!precioBienInput.trim()"
+          [class.sabadell-sim-precio-box--filled]="!!precioBienInput.trim()"
+        >
+          <!-- Un solo input: evita destruir/recrear el DOM al pasar de vacío → relleno (pérdida de foco / bloqueo al escribir) -->
+          <div class="sabadell-sim-precio-field-stack">
+            <div class="sabadell-sim-precio-field-stack-main">
+              <div
+                *ngIf="precioBienInput.trim()"
+                class="sabadell-sim-precio-box-top sabadell-sim-precio-box-top--label-only"
+              >
+                <span class="sabadell-sim-precio-sublabel">Cuánto prevés que te costará</span>
+              </div>
+              <input
+                id="sabadell-precio"
+                type="text"
+                class="sabadell-sim-precio-input"
+                [class.sabadell-sim-precio-input--filled]="!!precioBienInput.trim()"
+                name="precioBien"
+                [(ngModel)]="precioBienInput"
+                placeholder="Cuánto prevés que te costará"
+                inputmode="decimal"
+                autocomplete="off"
+                (blur)="onPrecioBienBlur()"
+              />
+            </div>
+            <button
+              *ngIf="precioBienInput.trim()"
+              type="button"
+              class="sabadell-sim-precio-clear sabadell-sim-precio-clear--trail"
+              aria-label="Borrar importe"
+              (click)="clearPrecioBien(); $event.stopPropagation()"
+            >
+              <i data-lucide="x" class="sabadell-sim-precio-clear-icon"></i>
+            </button>
+          </div>
+        </div>
+        <p class="sabadell-sim-hint">
+          Mínimo: 3.000 €. El préstamo no puede superar el valor total del bien a financiar.
+        </p>
+      </div>
+
+      <div class="sabadell-sim-field">
+        <div class="sabadell-sim-label-row">
+          <label class="sabadell-sim-label sabadell-sim-label--grow" id="sabadell-compartido-label"
+            >¿El préstamo será compartido?</label
+          >
+          <button
+            type="button"
+            class="sabadell-sim-info-btn"
+            aria-label="Información sobre préstamo compartido"
+            (click)="openPrestamoCompartidoInfo()"
+          >
+            <i data-lucide="info" class="sabadell-sim-info-icon"></i>
+          </button>
+        </div>
+        <p class="sabadell-sim-subtext">
+          Necesitáis una cuenta compartida en Banco Sabadell y cumplir los requisitos del préstamo.
+        </p>
+        <div class="sabadell-sim-yesno" role="group" aria-label="Préstamo compartido">
+          <button
+            type="button"
+            class="sabadell-sim-yesno-btn"
+            [class.sabadell-sim-yesno-btn--active]="prestamoCompartido === true"
+            (click)="setPrestamoCompartido(true)"
+          >
+            Sí
+          </button>
+          <button
+            type="button"
+            class="sabadell-sim-yesno-btn"
+            [class.sabadell-sim-yesno-btn--active]="prestamoCompartido === false"
+            (click)="setPrestamoCompartido(false)"
+          >
+            No
+          </button>
+        </div>
+
+        <div *ngIf="prestamoCompartido === true" class="sabadell-sim-field sabadell-sim-field--cotitular">
+          <h3 class="sabadell-sim-cotitular-title">Elige a la otra persona cotitular</h3>
+          <div class="sabadell-sim-cotitular-list" role="group" aria-label="Persona cotitular">
+            <button
+              type="button"
+              *ngFor="let c of cotitularOptions"
+              class="sabadell-sim-cotitular-btn"
+              [class.sabadell-sim-cotitular-btn--active]="cotitularId === c.id"
+              (click)="selectCotitular(c.id)"
+            >
+              {{ c.nombre }}
+            </button>
+          </div>
+        </div>
+      </div>
+      </ng-container>
+
+      <!-- Simulador: importe, plazo y cuota estimada -->
+      <ng-container *ngIf="simulationPhase === 'simulador'">
+        <div class="sabadell-simulador">
+          <app-amount-slider-galatea
+            [value]="simAmount"
+            [minValue]="simMinAmount"
+            [maxValue]="simMaxPrestamoOferta"
+            [step]="500"
+            [showClear]="true"
+            [compactFieldBox]="true"
+            unit="€"
+            mainTitle="¿Cuánto dinero necesitas?"
+            inputLabel="Cantidad"
+            ariaLabel="Importe del préstamo"
+            (valueChange)="onSimAmountChange($event)"
+          ></app-amount-slider-galatea>
+
+          <button type="button" class="sabadell-sim-link-secondary" (click)="solicitarOtroImporte()">
+            Solicitar otro importe
+          </button>
+
+          <div class="sabadell-sim-term">
+            <h3 class="sabadell-sim-term-heading">Elige el plazo de devolución</h3>
+            <div class="sabadell-sim-term-field">
+              <div class="sabadell-sim-term-field-stack">
+                <div class="sabadell-sim-term-field-stack-main">
+                  <div class="sabadell-sim-term-field-top sabadell-sim-term-field-top--label-only">
+                    <span class="sabadell-sim-term-label">Plazo</span>
+                  </div>
+                  <p class="sabadell-sim-term-value">{{ simTermMonths }} meses</p>
+                </div>
+                <button
+                  type="button"
+                  class="sabadell-sim-term-clear sabadell-sim-term-clear--trail"
+                  aria-label="Restablecer plazo al mínimo"
+                  (click)="resetPlazoAlMinimo()"
+                >
+                  <i data-lucide="x" class="sabadell-sim-term-clear-icon"></i>
+                </button>
+              </div>
+            </div>
+            <div class="sabadell-sim-term-control">
+              <div
+                class="sabadell-sim-term-slider-wrap"
+                [style.--progress]="termSliderProgressPercent + '%'"
+              >
+                <input
+                  type="range"
+                  class="sabadell-sim-term-slider"
+                  [min]="simMinTerm"
+                  [max]="simMaxTerm"
+                  step="1"
+                  [value]="simTermMonths"
+                  (input)="onSimTermSliderChange($event)"
+                  [attr.aria-valuemin]="simMinTerm"
+                  [attr.aria-valuemax]="simMaxTerm"
+                  [attr.aria-valuenow]="simTermMonths"
+                  aria-label="Plazo en meses"
+                />
+              </div>
+              <div class="sabadell-sim-term-minmax">
+                <span>Mín. {{ simMinTerm }} meses</span>
+                <span>Máx. {{ simMaxTerm }} meses</span>
+              </div>
+            </div>
+          </div>
+
+          <section class="sabadell-sim-cuota-card" aria-labelledby="sabadell-cuota-heading">
+            <div class="sabadell-sim-cuota-card-head">
+              <h3 id="sabadell-cuota-heading" class="sabadell-sim-cuota-card-title">Cuota estimada</h3>
+              <span class="sabadell-sim-cuota-card-sub">En {{ simTermMonths }} meses</span>
+            </div>
+            <p class="sabadell-sim-cuota-main">{{ formatEuro(simCuotaMensual) }} € / mes</p>
+            <p class="sabadell-sim-cuota-rates">
+              TIN {{ formatTinPercent(simTinAnual) }} % anual · TAE {{ formatTaePercent(simTaeAnual) }} %
+            </p>
+            <p class="sabadell-sim-cuota-badge">Sin comisión de apertura</p>
+            <p class="sabadell-sim-cuota-legal">
+              Importes orientativos. La oferta definitiva depende del análisis de riesgos y de la aprobación del banco.
+            </p>
+            <div class="sabadell-sim-cuota-divider"></div>
+            <div class="sabadell-sim-cuota-grid">
+              <div class="sabadell-sim-cuota-cell">
+                <span class="sabadell-sim-cuota-k">Importe total préstamo</span>
+                <span class="sabadell-sim-cuota-v">{{ formatEuro(simAmount) }} €</span>
+              </div>
+              <div class="sabadell-sim-cuota-cell">
+                <span class="sabadell-sim-cuota-k">Comisión de apertura</span>
+                <span class="sabadell-sim-cuota-v">{{ formatEuro(0) }} €</span>
+              </div>
+              <div class="sabadell-sim-cuota-cell">
+                <span class="sabadell-sim-cuota-k">Coste total préstamo</span>
+                <span class="sabadell-sim-cuota-v">{{ formatEuro(simCosteTotalPrestamo) }} €</span>
+              </div>
+              <div class="sabadell-sim-cuota-cell">
+                <span class="sabadell-sim-cuota-k">Importe total adeudado</span>
+                <span class="sabadell-sim-cuota-v">{{ formatEuro(simImporteTotalAdeudado) }} €</span>
+              </div>
+            </div>
+          </section>
+        </div>
+      </ng-container>
+
+      <!-- Paso 2 de 5: datos laborales (tras documento + acelerador) -->
+      <ng-container *ngIf="simulationPhase === 'datos-laborales'">
+        <h2 class="sabadell-sim-page-title sabadell-sim-page-title--completar">Completar datos</h2>
+        <h3 class="sabadell-sim-subsection-title">Datos laborales</h3>
+
+        <div class="sabadell-sim-field">
+          <label class="sabadell-sim-label" id="sabadell-laboral-sit-label">Situación laboral</label>
+          <div class="sabadell-laboral-dropdown">
+            <button
+              type="button"
+              class="sabadell-finalidad-trigger"
+              [class.sabadell-finalidad-trigger--open]="laboralDropdownOpen === 'situacion'"
+              [attr.aria-expanded]="laboralDropdownOpen === 'situacion'"
+              aria-haspopup="listbox"
+              (click)="toggleLaboralDropdown('situacion', $event)"
+            >
+              <span
+                class="sabadell-finalidad-trigger-text"
+                [class.sabadell-finalidad-trigger-text--placeholder]="laboralSituacion === ''"
+              >
+                {{ laboralSituacion === '' ? 'Selecciona una opción' : getLaboralSituacionLabel() }}
+              </span>
+              <i
+                [attr.data-lucide]="laboralDropdownOpen === 'situacion' ? 'chevron-up' : 'chevron-down'"
+                class="sabadell-finalidad-trigger-chevron"
+                aria-hidden="true"
+              ></i>
+            </button>
+            <div
+              *ngIf="laboralDropdownOpen === 'situacion'"
+              class="sabadell-finalidad-panel"
+              role="listbox"
+              aria-labelledby="sabadell-laboral-sit-label"
+            >
+              <button
+                type="button"
+                *ngFor="let o of laboralSituaciones"
+                role="option"
+                class="sabadell-finalidad-option"
+                [class.sabadell-finalidad-option--selected]="laboralSituacion === o.value"
+                (click)="selectLaboralSituacion(o.value, $event)"
+              >
+                <span class="sabadell-finalidad-option-label">{{ o.label }}</span>
+                <i
+                  *ngIf="laboralSituacion === o.value"
+                  data-lucide="check"
+                  class="sabadell-finalidad-check"
+                  aria-hidden="true"
+                ></i>
+              </button>
+            </div>
+          </div>
+          <p class="sabadell-sim-hint sabadell-sim-hint--field">Selecciona una opción</p>
+        </div>
+
+        <div class="sabadell-sim-field">
+          <label class="sabadell-sim-label" id="sabadell-laboral-prof-label">Profesión</label>
+          <div class="sabadell-laboral-dropdown">
+            <button
+              type="button"
+              class="sabadell-finalidad-trigger"
+              [class.sabadell-finalidad-trigger--open]="laboralDropdownOpen === 'profesion'"
+              [attr.aria-expanded]="laboralDropdownOpen === 'profesion'"
+              aria-haspopup="listbox"
+              (click)="toggleLaboralDropdown('profesion', $event)"
+            >
+              <span
+                class="sabadell-finalidad-trigger-text"
+                [class.sabadell-finalidad-trigger-text--placeholder]="laboralProfesion === ''"
+              >
+                {{ laboralProfesion === '' ? 'Selecciona una opción' : laboralProfesion }}
+              </span>
+              <i
+                [attr.data-lucide]="laboralDropdownOpen === 'profesion' ? 'chevron-up' : 'chevron-down'"
+                class="sabadell-finalidad-trigger-chevron"
+                aria-hidden="true"
+              ></i>
+            </button>
+            <div
+              *ngIf="laboralDropdownOpen === 'profesion'"
+              class="sabadell-finalidad-panel sabadell-laboral-panel-profesion"
+              role="listbox"
+              aria-labelledby="sabadell-laboral-prof-label"
+            >
+              <div class="sabadell-laboral-search">
+                <i data-lucide="search" class="sabadell-laboral-search-icon" aria-hidden="true"></i>
+                <input
+                  type="search"
+                  class="sabadell-laboral-search-input"
+                  [(ngModel)]="laboralProfesionQuery"
+                  placeholder="Buscar"
+                  autocomplete="off"
+                  aria-label="Buscar profesión"
+                />
+              </div>
+              <div class="sabadell-laboral-prof-list">
+                <button
+                  type="button"
+                  *ngFor="let p of laboralProfesionesFiltered"
+                  role="option"
+                  class="sabadell-finalidad-option"
+                  [class.sabadell-finalidad-option--selected]="laboralProfesion === p"
+                  (click)="selectLaboralProfesion(p, $event)"
+                >
+                  <span class="sabadell-finalidad-option-label">{{ p }}</span>
+                  <i
+                    *ngIf="laboralProfesion === p"
+                    data-lucide="check"
+                    class="sabadell-finalidad-check"
+                    aria-hidden="true"
+                  ></i>
+                </button>
+              </div>
+            </div>
+          </div>
+          <p class="sabadell-sim-hint sabadell-sim-hint--field">Selecciona una opción</p>
+        </div>
+
+        <ng-container *ngIf="showLaboralExtraFields">
+          <div class="sabadell-sim-field">
+            <label class="sabadell-sim-label" id="sabadell-laboral-act-label">Actividad económica de la empresa</label>
+            <div class="sabadell-laboral-dropdown">
+              <button
+                type="button"
+                class="sabadell-finalidad-trigger"
+                [class.sabadell-finalidad-trigger--open]="laboralDropdownOpen === 'actividad'"
+                [attr.aria-expanded]="laboralDropdownOpen === 'actividad'"
+                aria-haspopup="listbox"
+                (click)="toggleLaboralDropdown('actividad', $event)"
+              >
+                <span
+                  class="sabadell-finalidad-trigger-text"
+                  [class.sabadell-finalidad-trigger-text--placeholder]="laboralActividad === ''"
+                >
+                  {{ laboralActividad === '' ? 'Selecciona una opción' : laboralActividad }}
+                </span>
+                <i
+                  [attr.data-lucide]="laboralDropdownOpen === 'actividad' ? 'chevron-up' : 'chevron-down'"
+                  class="sabadell-finalidad-trigger-chevron"
+                  aria-hidden="true"
+                ></i>
+              </button>
+              <div
+                *ngIf="laboralDropdownOpen === 'actividad'"
+                class="sabadell-finalidad-panel"
+                role="listbox"
+                aria-labelledby="sabadell-laboral-act-label"
+              >
+                <button
+                  type="button"
+                  *ngFor="let a of laboralActividades"
+                  role="option"
+                  class="sabadell-finalidad-option"
+                  [class.sabadell-finalidad-option--selected]="laboralActividad === a"
+                  (click)="selectLaboralActividad(a, $event)"
+                >
+                  <span class="sabadell-finalidad-option-label">{{ a }}</span>
+                  <i
+                    *ngIf="laboralActividad === a"
+                    data-lucide="check"
+                    class="sabadell-finalidad-check"
+                    aria-hidden="true"
+                  ></i>
+                </button>
+              </div>
+            </div>
+            <p class="sabadell-sim-hint sabadell-sim-hint--field">Selecciona una opción</p>
+          </div>
+
+          <div class="sabadell-sim-field">
+            <label class="sabadell-sim-label" for="sabadell-laboral-anios">Número de años en la empresa</label>
+            <div class="sabadell-laboral-number-box">
+              <input
+                id="sabadell-laboral-anios"
+                type="text"
+                inputmode="numeric"
+                class="sabadell-laboral-number-input"
+                [(ngModel)]="laboralAniosEmpresa"
+                name="laboralAnios"
+                autocomplete="off"
+                aria-describedby="sabadell-laboral-anios-hint"
+              />
+              <button
+                *ngIf="laboralAniosEmpresa.trim()"
+                type="button"
+                class="sabadell-laboral-number-clear"
+                aria-label="Borrar"
+                (click)="clearLaboralAniosEmpresa()"
+              >
+                <i data-lucide="x" class="sabadell-laboral-number-clear-icon"></i>
+              </button>
+            </div>
+            <p id="sabadell-laboral-anios-hint" class="sabadell-sim-hint sabadell-sim-hint--field">
+              Si llevas menos de un año escribe 0
+            </p>
+          </div>
+        </ng-container>
+      </ng-container>
+
+      <!-- Paso 3 de 5: datos familiares -->
+      <ng-container *ngIf="simulationPhase === 'datos-familiares'">
+        <h2 class="sabadell-sim-page-title sabadell-sim-page-title--completar">Completar datos</h2>
+        <h3 class="sabadell-sim-subsection-title">Datos familiares</h3>
+
+        <div class="sabadell-sim-field">
+          <label class="sabadell-sim-label" id="sabadell-familiar-ec-label">Estado civil</label>
+          <div class="sabadell-familiar-dropdown">
+            <button
+              type="button"
+              class="sabadell-finalidad-trigger"
+              [class.sabadell-finalidad-trigger--open]="familiarDropdownOpen === 'estadoCivil'"
+              [attr.aria-expanded]="familiarDropdownOpen === 'estadoCivil'"
+              aria-haspopup="listbox"
+              (click)="toggleFamiliarDropdown('estadoCivil', $event)"
+            >
+              <span
+                class="sabadell-finalidad-trigger-text"
+                [class.sabadell-finalidad-trigger-text--placeholder]="familiarEstadoCivil === ''"
+              >
+                {{ familiarEstadoCivil === '' ? 'Selecciona una opción' : getEstadoCivilLabel() }}
+              </span>
+              <i
+                [attr.data-lucide]="familiarDropdownOpen === 'estadoCivil' ? 'chevron-up' : 'chevron-down'"
+                class="sabadell-finalidad-trigger-chevron"
+                aria-hidden="true"
+              ></i>
+            </button>
+            <div
+              *ngIf="familiarDropdownOpen === 'estadoCivil'"
+              class="sabadell-finalidad-panel"
+              role="listbox"
+              aria-labelledby="sabadell-familiar-ec-label"
+            >
+              <button
+                type="button"
+                *ngFor="let o of familiarEstadosCiviles"
+                role="option"
+                class="sabadell-finalidad-option"
+                [class.sabadell-finalidad-option--selected]="familiarEstadoCivil === o.value"
+                (click)="selectFamiliarEstadoCivil(o.value, $event)"
+              >
+                <span class="sabadell-finalidad-option-label">{{ o.label }}</span>
+                <i
+                  *ngIf="familiarEstadoCivil === o.value"
+                  data-lucide="check"
+                  class="sabadell-finalidad-check"
+                  aria-hidden="true"
+                ></i>
+              </button>
+            </div>
+          </div>
+          <p class="sabadell-sim-hint sabadell-sim-hint--field">Selecciona una opción</p>
+        </div>
+
+        <div class="sabadell-sim-field">
+          <label class="sabadell-sim-label" for="sabadell-familiar-miembros">Miembros de la unidad familiar</label>
+          <div class="sabadell-laboral-number-box">
+            <input
+              id="sabadell-familiar-miembros"
+              type="text"
+              inputmode="numeric"
+              class="sabadell-laboral-number-input"
+              [(ngModel)]="familiarMiembrosUnidad"
+              name="familiarMiembros"
+              autocomplete="off"
+              aria-describedby="sabadell-familiar-miembros-hint"
+            />
+            <button
+              *ngIf="familiarMiembrosUnidad.trim()"
+              type="button"
+              class="sabadell-laboral-number-clear"
+              aria-label="Borrar"
+              (click)="clearFamiliarMiembros()"
+            >
+              <i data-lucide="x" class="sabadell-laboral-number-clear-icon"></i>
+            </button>
+          </div>
+          <p id="sabadell-familiar-miembros-hint" class="sabadell-sim-hint sabadell-sim-hint--field">
+            Inclúyete y suma a pareja, hijos o familiares. Ejemplo: tú + pareja + 2 hijos = 4 personas
+          </p>
+        </div>
+      </ng-container>
+
+      <!-- Paso 4 de 5: datos sobre la vivienda -->
+      <ng-container *ngIf="simulationPhase === 'datos-vivienda'">
+        <h2 class="sabadell-sim-page-title sabadell-sim-page-title--completar">Completar datos</h2>
+        <h3 class="sabadell-sim-subsection-title">Datos sobre la vivienda</h3>
+
+        <div class="sabadell-sim-field">
+          <label class="sabadell-sim-label" id="sabadell-vivienda-sit-label">Situación de la vivienda</label>
+          <div class="sabadell-vivienda-dropdown">
+            <button
+              type="button"
+              class="sabadell-finalidad-trigger"
+              [class.sabadell-finalidad-trigger--open]="viviendaDropdownOpen === 'situacion'"
+              [attr.aria-expanded]="viviendaDropdownOpen === 'situacion'"
+              aria-haspopup="listbox"
+              (click)="toggleViviendaDropdown($event)"
+            >
+              <span
+                class="sabadell-finalidad-trigger-text"
+                [class.sabadell-finalidad-trigger-text--placeholder]="viviendaSituacion === ''"
+              >
+                {{ viviendaSituacion === '' ? 'Selecciona una opción' : getViviendaSituacionLabel() }}
+              </span>
+              <i
+                [attr.data-lucide]="viviendaDropdownOpen === 'situacion' ? 'chevron-up' : 'chevron-down'"
+                class="sabadell-finalidad-trigger-chevron"
+                aria-hidden="true"
+              ></i>
+            </button>
+            <div
+              *ngIf="viviendaDropdownOpen === 'situacion'"
+              class="sabadell-finalidad-panel"
+              role="listbox"
+              aria-labelledby="sabadell-vivienda-sit-label"
+            >
+              <button
+                type="button"
+                *ngFor="let o of viviendaSituaciones"
+                role="option"
+                class="sabadell-finalidad-option"
+                [class.sabadell-finalidad-option--selected]="viviendaSituacion === o.value"
+                (click)="selectViviendaSituacion(o.value, $event)"
+              >
+                <span class="sabadell-finalidad-option-label">{{ o.label }}</span>
+                <i
+                  *ngIf="viviendaSituacion === o.value"
+                  data-lucide="check"
+                  class="sabadell-finalidad-check"
+                  aria-hidden="true"
+                ></i>
+              </button>
+            </div>
+          </div>
+          <p class="sabadell-sim-hint sabadell-sim-hint--field">Selecciona una opción</p>
+        </div>
+
+        <div class="sabadell-sim-field">
+          <label class="sabadell-sim-label" for="sabadell-vivienda-cp">Código Postal</label>
+          <div class="sabadell-laboral-number-box">
+            <input
+              id="sabadell-vivienda-cp"
+              type="text"
+              inputmode="numeric"
+              maxlength="5"
+              class="sabadell-laboral-number-input"
+              [(ngModel)]="viviendaCodigoPostal"
+              name="viviendaCp"
+              autocomplete="postal-code"
+              pattern="[0-9]*"
+            />
+            <button
+              *ngIf="viviendaCodigoPostal.trim()"
+              type="button"
+              class="sabadell-laboral-number-clear"
+              aria-label="Borrar"
+              (click)="clearViviendaCodigoPostal()"
+            >
+              <i data-lucide="x" class="sabadell-laboral-number-clear-icon"></i>
+            </button>
+          </div>
+        </div>
+      </ng-container>
+
+      <!-- Paso 5 de 5: datos económicos (formulario completo en siguiente entrega) -->
+      <ng-container *ngIf="simulationPhase === 'datos-economicos'">
+        <h2 class="sabadell-sim-page-title sabadell-sim-page-title--completar">Completar datos</h2>
+        <h3 class="sabadell-sim-subsection-title">Datos económicos</h3>
+        <p class="sabadell-sim-hint">Continúa el proceso en las siguientes versiones.</p>
+      </ng-container>
+    </main>
+
+    <div
+      *ngIf="showSimuladorOfertaHint && simulationPhase === 'simulador'"
+      class="sabadell-sim-oferta-toast"
+      role="status"
+      aria-live="polite"
+    >
+      <i data-lucide="sparkles" class="sabadell-sim-oferta-toast-icon" aria-hidden="true"></i>
+      <span class="sabadell-sim-oferta-toast-text">Continúa para ver tu cuota personalizada</span>
+    </div>
+
+    <!-- Bottom sheet: información préstamo compartido -->
+    <div
+      *ngIf="showPrestamoCompartidoInfo"
+      class="sabadell-compartido-info-overlay"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="sabadell-compartido-info-title"
+      (click)="closePrestamoCompartidoInfo()"
+    >
+      <div class="sabadell-compartido-info-sheet" (click)="$event.stopPropagation()">
+        <div class="sabadell-compartido-info-handle" aria-hidden="true"></div>
+        <div class="sabadell-compartido-info-head">
+          <button
+            type="button"
+            class="sabadell-compartido-info-close"
+            aria-label="Cerrar"
+            (click)="closePrestamoCompartidoInfo()"
+          >
+            <i data-lucide="x" class="sabadell-compartido-info-close-icon"></i>
+          </button>
+        </div>
+        <div class="sabadell-compartido-info-body">
+          <h2 id="sabadell-compartido-info-title" class="sabadell-compartido-info-title">Préstamo compartido</h2>
+          <p class="sabadell-compartido-info-p">
+            Un préstamo compartido es un préstamo solicitado por dos personas titulares.
+          </p>
+          <p class="sabadell-compartido-info-p">
+            Las dos personas titulares sois responsables del préstamo y de su pago, y deberéis aceptar las condiciones
+            antes de firmar.
+          </p>
+          <p class="sabadell-compartido-info-subtitle">Para poder solicitarlo, ambas personas debéis:</p>
+          <ul class="sabadell-compartido-info-list">
+            <li>Tener una cuenta compartida en Banco Sabadell.</li>
+            <li>Ser mayor de edad.</li>
+            <li>Ser clientes desde hace más de 6 meses.</li>
+            <li>Tener residencia en España.</li>
+            <li>Tener el servicio de banca a distancia de Banco Sabadell.</li>
+            <li>
+              Tener actualizados el correo electrónico y el teléfono para las comunicaciones del proceso y la firma del
+              préstamo.
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- Modal Ver progreso -->
+    <div
+      *ngIf="showProgressModal"
+      class="sabadell-progress-overlay"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="sabadell-progress-title"
+      (click)="closeProgressModal()"
+    >
+      <div class="sabadell-progress-sheet" (click)="$event.stopPropagation()">
+        <h3 id="sabadell-progress-title" class="sabadell-progress-title">Progreso de la solicitud</h3>
+        <ol class="sabadell-progress-list">
+          <li
+            *ngFor="let label of wizardProgressLabels; index as i"
+            class="sabadell-progress-item"
+            [class.sabadell-progress-item--current]="isProgressModalItemCurrent(i)"
+            [class.sabadell-progress-item--done]="isProgressModalItemDone(i)"
+          >
+            {{ label }}
+          </li>
+        </ol>
+        <button type="button" class="sabadell-progress-close" (click)="closeProgressModal()">Cerrar</button>
+      </div>
+    </div>
+
+    <!-- CTA onboarding -->
+    <footer *ngIf="step === 0" class="simulacion-footer">
+      <button type="button" class="simulacion-cta" (click)="onEmpezar()">Empezar</button>
+    </footer>
+
+    <!-- CTA simulación: formulario → simulador -->
+    <footer *ngIf="step === 1 && simulationPhase === 'datos'" class="simulacion-footer">
+      <button
+        type="button"
+        class="simulacion-cta"
+        [disabled]="!simulationStepValid"
+        (click)="onPersonalizarSimulacion()"
+      >
+        Personalizar mi simulación
+      </button>
+    </footer>
+    <footer *ngIf="step === 1 && simulationPhase === 'simulador'" class="simulacion-footer">
+      <button type="button" class="simulacion-cta" (click)="onContinuarDesdeSimulador()">Continuar</button>
+    </footer>
+
+    <footer *ngIf="step === 1 && simulationPhase === 'datos-laborales'" class="simulacion-footer">
+      <button
+        type="button"
+        class="simulacion-cta"
+        [disabled]="!laboralFormValid"
+        (click)="onIrADatosFamiliares()"
+      >
+        Ir a datos familiares
+      </button>
+    </footer>
+
+    <footer *ngIf="step === 1 && simulationPhase === 'datos-familiares'" class="simulacion-footer">
+      <button
+        type="button"
+        class="simulacion-cta"
+        [disabled]="!familiarFormValid"
+        (click)="onIrADatosVivienda()"
+      >
+        Ir a datos sobre la vivienda
+      </button>
+    </footer>
+
+    <footer *ngIf="step === 1 && simulationPhase === 'datos-vivienda'" class="simulacion-footer">
+      <button
+        type="button"
+        class="simulacion-cta"
+        [disabled]="!viviendaFormValid"
+        (click)="onIrADatosEconomicos()"
+      >
+        Ir a datos económicos
+      </button>
+    </footer>
+
+    <footer *ngIf="step === 1 && simulationPhase === 'datos-economicos'" class="simulacion-footer">
+      <button type="button" class="simulacion-cta" disabled>Continuar</button>
+    </footer>
+
+    <!-- Tras Continuar en simulador: mensaje de carga → documento previo -->
+    <div
+      *ngIf="documentFlowPhase === 'spinner'"
+      class="sabadell-doc-flow-overlay sabadell-doc-flow-overlay--spinner"
+      aria-busy="true"
+      aria-live="polite"
+    >
+      <div class="sabadell-doc-spinner-box">
+        <div class="sabadell-doc-spinner-ring" aria-hidden="true">
+          <svg class="sabadell-doc-spinner-svg" viewBox="0 0 50 50">
+            <circle
+              class="sabadell-doc-spinner-path"
+              cx="25"
+              cy="25"
+              r="20"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="4"
+              stroke-linecap="round"
+            ></circle>
+          </svg>
+        </div>
+        <h2 class="sabadell-doc-spinner-title">
+          Para continuar, tienes que leer y aceptar un documento previo.
+        </h2>
+        <p class="sabadell-doc-spinner-sub">Recuerda que aún no estás contratando.</p>
+      </div>
+    </div>
+
+    <div
+      *ngIf="documentFlowPhase === 'document'"
+      class="sabadell-doc-flow-overlay sabadell-doc-flow-overlay--viewer"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="sabadell-doc-viewer-title"
+    >
+      <header class="sabadell-doc-viewer-toolbar">
+        <div class="sabadell-doc-viewer-toolbar-start">
+          <button
+            type="button"
+            class="sabadell-doc-viewer-tool"
+            aria-label="Ampliar documento"
+            (click)="onDocumentZoom()"
+          >
+            <i data-lucide="zoom-in" class="sabadell-doc-viewer-tool-icon"></i>
+          </button>
+          <button
+            type="button"
+            class="sabadell-doc-viewer-tool"
+            aria-label="Descargar documento"
+            (click)="onDocumentDownload()"
+          >
+            <i data-lucide="download" class="sabadell-doc-viewer-tool-icon"></i>
+          </button>
+        </div>
+        <button
+          type="button"
+          class="sabadell-doc-viewer-close"
+          aria-label="Cerrar"
+          (click)="onRechazarDocumento()"
+        >
+          <i data-lucide="x" class="sabadell-doc-viewer-close-icon"></i>
+        </button>
+      </header>
+
+      <div class="sabadell-doc-viewer-main">
+        <div
+          #docScroll
+          class="sabadell-doc-scroll"
+          (scroll)="onDocumentScroll()"
+        >
+          <article class="sabadell-doc-sheet">
+            <p class="sabadell-doc-brand">Banco Sabadell</p>
+            <h1 id="sabadell-doc-viewer-title" class="sabadell-doc-sheet-title">Solicitud de Préstamo</h1>
+            <p class="sabadell-doc-sheet-lead">
+              Documento informativo previo a la contratación. La aceptación de este documento no implica la
+              concesión del préstamo.
+            </p>
+            <section class="sabadell-doc-section">
+              <h2 class="sabadell-doc-section-title">1. Datos e informaciones. Tratamiento de datos de carácter personal</h2>
+              <p>
+                Los datos personales facilitados serán tratados por Banco de Sabadell, S.A., con la finalidad de
+                gestionar su solicitud de préstamo, realizar el estudio de riesgos y, en su caso, formalizar el
+                contrato y el cumplimiento de la relación contractual y legal aplicable.
+              </p>
+              <p>
+                La base legitimadora del tratamiento es la ejecución de medidas precontractuales y, en su caso,
+                contractuales, el cumplimiento de obligaciones legales y el interés legítimo del responsable para la
+                prevención del fraude.
+              </p>
+              <p>
+                Podrá ejercer sus derechos de acceso, rectificación, supresión, oposición, limitación del tratamiento
+                y portabilidad dirigiéndose al responsable del tratamiento en la forma indicada en la política de
+                privacidad disponible en la página web del banco.
+              </p>
+            </section>
+            <section class="sabadell-doc-section">
+              <h2 class="sabadell-doc-section-title">2. Condiciones económicas indicativas</h2>
+              <p>
+                Las condiciones mostradas en la simulación (importe, plazo, cuota, TIN y TAE) tienen carácter meramente
+                orientativo y no constituyen oferta vinculante. La oferta definitiva, si procede, figurará en la
+                documentación contractual que deberá revisar y firmar electrónicamente.
+              </p>
+              <p>
+                El tipo de interés nominal anual (TIN) y la TAE pueden variar en función del resultado del estudio de
+                riesgos, del perfil del titular o cotitulares y de la documentación aportada.
+              </p>
+            </section>
+            <section class="sabadell-doc-section">
+              <h2 class="sabadell-doc-section-title">3. Información sobre el crédito al consumo</h2>
+              <p>
+                De conformidad con la normativa en materia de crédito al consumo, se le informa de que el incumplimiento
+                de sus obligaciones de pago puede tener consecuencias graves para su situación financiera y dificultar el
+                acceso al crédito en el futuro.
+              </p>
+              <p>
+                Dispone de un plazo de reflexión de catorce días naturales para desistir del contrato de crédito sin
+                necesidad de indicar el motivo, cuando así proceda según la normativa aplicable.
+              </p>
+            </section>
+            <section class="sabadell-doc-section">
+              <h2 class="sabadell-doc-section-title">4. Comunicaciones y firma electrónica</h2>
+              <p>
+                Las comunicaciones relativas a su solicitud podrán realizarse a través de los canales electrónicos
+                habilitados, incluida la firma de documentos con validez legal mediante mecanismos reconocidos.
+              </p>
+              <p>
+                Es responsabilidad del titular mantener actualizados sus datos de contacto (correo electrónico y
+                teléfono móvil) en la entidad para el correcto seguimiento del proceso.
+              </p>
+            </section>
+            <p class="sabadell-doc-sheet-end">— Fin del documento informativo —</p>
+          </article>
+        </div>
+        <button
+          type="button"
+          class="sabadell-doc-scroll-fab"
+          aria-label="Ir al final del documento"
+          (click)="scrollDocumentToBottom()"
+        >
+          <i data-lucide="chevron-down" class="sabadell-doc-scroll-fab-icon"></i>
+        </button>
+      </div>
+
+      <div class="sabadell-doc-viewer-hint" role="status">
+        <span class="sabadell-doc-viewer-hint-icon" aria-hidden="true">i</span>
+        <p class="sabadell-doc-viewer-hint-text">Debes leer todo el documento para poder aceptar.</p>
+      </div>
+
+      <footer class="sabadell-doc-viewer-footer">
+        <button
+          type="button"
+          class="sabadell-doc-viewer-primary"
+          [disabled]="!documentReadComplete"
+          (click)="onAceptarDocumento()"
+        >
+          Aceptar
+        </button>
+        <button type="button" class="sabadell-doc-viewer-secondary" (click)="onRechazarDocumento()">
+          Rechazar
+        </button>
+      </footer>
+    </div>
+
+    <!-- Tras «Aceptar» documento: acelerador previo a datos personales -->
+    <div
+      *ngIf="postAceptarDocPhase === 'accelerator'"
+      class="sabadell-doc-flow-overlay sabadell-doc-flow-overlay--spinner sabadell-accelerator-overlay"
+      aria-busy="true"
+      aria-live="polite"
+    >
+      <div class="sabadell-accelerator-box">
+        <div class="sabadell-doc-spinner-ring" aria-hidden="true">
+          <svg class="sabadell-doc-spinner-svg" viewBox="0 0 50 50">
+            <circle
+              class="sabadell-doc-spinner-path"
+              cx="25"
+              cy="25"
+              r="20"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="4"
+              stroke-linecap="round"
+            ></circle>
+          </svg>
+        </div>
+        <h2 class="sabadell-accelerator-title">Vamos a calcular tu cuota personalizada</h2>
+        <p class="sabadell-accelerator-body">
+          Solo necesitamos algunos datos sobre tu situación laboral, familiar, vivienda e ingresos.
+        </p>
+        <p class="sabadell-accelerator-time">Solo te llevará menos de 2 minutos</p>
+      </div>
+    </div>
+
+    <!-- Entre pantallas de datos: spinner + mensajes rotativos -->
+    <div
+      *ngIf="datosStepInterstitialActive"
+      class="sabadell-doc-flow-overlay sabadell-doc-flow-overlay--spinner sabadell-datos-interstitial-overlay"
+      aria-busy="true"
+      aria-live="polite"
+    >
+      <div class="sabadell-datos-interstitial-box">
+        <div class="sabadell-doc-spinner-ring" aria-hidden="true">
+          <svg class="sabadell-doc-spinner-svg" viewBox="0 0 50 50">
+            <circle
+              class="sabadell-doc-spinner-path"
+              cx="25"
+              cy="25"
+              r="20"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="4"
+              stroke-linecap="round"
+            ></circle>
+          </svg>
+        </div>
+        <div class="sabadell-datos-interstitial-slide">
+          <h2 class="sabadell-datos-interstitial-title">{{ datosInterstitialCurrentSlide.title }}</h2>
+          <p
+            *ngFor="let line of datosInterstitialCurrentSlide.bodyLines"
+            class="sabadell-datos-interstitial-body"
+          >
+            {{ line }}
+          </p>
+          <p class="sabadell-datos-interstitial-foot">
+            Recuerda que <strong>aún no estás contratando</strong>.
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

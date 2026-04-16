@@ -1,5 +1,6 @@
 import { Component, EventEmitter, Output, AfterViewInit, OnInit, HostListener } from '@angular/core';
 import { WizardStateService } from '../../services/wizard-state.service';
+import { isPreconcedidoEntryBlocked } from '../../constants/prestamo-preconcedido-entry';
 
 declare var lucide: any;
 
@@ -11,6 +12,9 @@ declare var lucide: any;
 export class ContratarComponent implements AfterViewInit, OnInit {
   @Output() next = new EventEmitter<void>();
   @Output() previous = new EventEmitter<void>();
+
+  /** Si false, el usuario fue rechazado por normativa 40%: no mostrar hero preconcedido (sí cashback genérico) */
+  showPreconcedidoCard = true;
 
   showInfoModal = false;
   hasSeenModal = false; // Para controlar si ya vio la modal la primera vez
@@ -51,12 +55,14 @@ export class ContratarComponent implements AfterViewInit, OnInit {
   };
 
   ngOnInit(): void {
+    this.showPreconcedidoCard = !isPreconcedidoEntryBlocked();
+
     // Verificar si viene del entry point de Posición Global
     const state = this.wizardState.getCurrentState();
     const modalSeen = localStorage.getItem('prestamo-modal-seen');
-    
-    // Si viene del entry point y no ha visto el modal, mostrarlo automáticamente
-    if (state.showPrestamoModal && !modalSeen) {
+
+    // Si viene del entry point y no ha visto el modal, mostrarlo automáticamente (solo si aplica preconcedido)
+    if (state.showPrestamoModal && !modalSeen && this.showPreconcedidoCard) {
       setTimeout(() => {
         this.showInfoModal = true;
         if (typeof lucide !== 'undefined') {
@@ -97,9 +103,9 @@ export class ContratarComponent implements AfterViewInit, OnInit {
 
   onIrASimulador(): void {
     this.onCerrarModal();
-    // Marcar que viene del modal para que Préstamos abra el simulador
-    sessionStorage.setItem('from-prestamo-modal', 'true');
-    // Navegar a Préstamos
+    if (!isPreconcedidoEntryBlocked()) {
+      sessionStorage.setItem('from-prestamo-modal', 'true');
+    }
     this.wizardState.setCurrentStep(3);
   }
 
@@ -111,9 +117,15 @@ export class ContratarComponent implements AfterViewInit, OnInit {
   }
 
   onIrAPrestamos(): void {
-    // Abrir proceso de préstamo preconcedido con seguro (onboarding → simulación → resumen → documentos → firma)
-    sessionStorage.setItem('from-prestamo-modal', 'true');
+    if (!isPreconcedidoEntryBlocked()) {
+      sessionStorage.setItem('from-prestamo-modal', 'true');
+    }
     this.next.emit();
+  }
+
+  /** Tarjeta genérica cashback (sustituye al preconcedido si hubo rechazo normativo) */
+  onCashbackPromoClick(): void {
+    // Punto de extensión: detalle del programa cashback
   }
 
   onVolver(): void {

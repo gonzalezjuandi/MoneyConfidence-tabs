@@ -1,29 +1,140 @@
-<!-- Componente basado en bs-slider de Galatea -->
-<div class="amount-slider-galatea-wrapper">
-  <!-- Header: Valor editable -->
-  <div class="amount-slider-galatea-header">
-    <div class="header-right">
-      <div class="amount-slider-galatea-value" 
-           [class.editable]="editable"
-           (click)="onEditValue()">
-        <span *ngIf="!isEditing">{{ formattedValue }} {{ unit }}</span>
-        <input *ngIf="isEditing"
-               type="text"
-               id="galatea-amount-input"
-               class="galatea-amount-input"
-               [value]="inputValue"
-               (input)="onInputChange($event)"
-               (blur)="onInputBlur()"
-               (focus)="onInputFocus()"
-               autocomplete="off">
-        <i data-lucide="pencil" class="pencil-icon" *ngIf="editable && !isEditing"></i>
+<!-- Slider importe: título → caja (subetiqueta opcional) → slider → Mín./Máx. -->
+<div
+  class="amount-slider-galatea-wrapper"
+  [class.amount-slider-galatea-wrapper--stacked]="mainTitle || inputLabel"
+>
+  <ng-container *ngIf="mainTitle || inputLabel; else galateaLegacyHeader">
+    <h3 class="amount-slider-galatea-main-title" *ngIf="mainTitle">{{ mainTitle }}</h3>
+
+    <div
+      class="amount-slider-galatea-field"
+      [class.amount-slider-galatea-field--single-line]="!inputLabel"
+      [class.amount-slider-galatea-field--compact56]="compactFieldBox"
+    >
+      <!-- Simulación préstamo: compact56 = subetiqueta+valor a la izquierda, limpiar centrado a la derecha -->
+      <ng-container *ngIf="inputLabel; else simulacionAmountRow">
+        <ng-container *ngIf="compactFieldBox; else galateaInputLabelStandard">
+          <div class="amount-slider-galatea-field-compact">
+            <div class="amount-slider-galatea-field-compact-main">
+              <div class="amount-slider-galatea-field-top amount-slider-galatea-field-top--label-only">
+                <span class="amount-slider-galatea-input-label">{{ inputLabel }}</span>
+              </div>
+              <div
+                class="amount-slider-galatea-value amount-slider-galatea-value--field"
+                [class.editable]="editable"
+                (click)="onEditValue()"
+              >
+                <span *ngIf="!isEditing">{{ formattedValue }},00 {{ unit }}</span>
+                <input
+                  *ngIf="isEditing"
+                  type="text"
+                  id="galatea-amount-input"
+                  class="galatea-amount-input galatea-amount-input--field"
+                  [value]="inputValue"
+                  (input)="onInputChange($event)"
+                  (blur)="onInputBlur()"
+                  (focus)="onInputFocus()"
+                  autocomplete="off"
+                />
+              </div>
+            </div>
+            <button
+              *ngIf="showClear"
+              type="button"
+              class="amount-slider-galatea-clear amount-slider-galatea-clear--trail"
+              (click)="onClearClick(); $event.stopPropagation()"
+              aria-label="Restablecer importe al mínimo"
+            >
+              <i data-lucide="x" class="amount-slider-galatea-clear-icon"></i>
+            </button>
+          </div>
+        </ng-container>
+        <ng-template #galateaInputLabelStandard>
+          <div class="amount-slider-galatea-field-top">
+            <span class="amount-slider-galatea-input-label">{{ inputLabel }}</span>
+            <button
+              *ngIf="showClear"
+              type="button"
+              class="amount-slider-galatea-clear"
+              (click)="onClearClick(); $event.stopPropagation()"
+              aria-label="Restablecer importe al mínimo"
+            >
+              <i data-lucide="x" class="amount-slider-galatea-clear-icon"></i>
+            </button>
+          </div>
+          <div
+            class="amount-slider-galatea-value amount-slider-galatea-value--field"
+            [class.editable]="editable"
+            (click)="onEditValue()"
+          >
+            <span *ngIf="!isEditing">{{ formattedValue }},00 {{ unit }}</span>
+            <input
+              *ngIf="isEditing"
+              type="text"
+              id="galatea-amount-input-standard"
+              class="galatea-amount-input galatea-amount-input--field"
+              [value]="inputValue"
+              (input)="onInputChange($event)"
+              (blur)="onInputBlur()"
+              (focus)="onInputFocus()"
+              autocomplete="off"
+            />
+          </div>
+        </ng-template>
+      </ng-container>
+
+      <ng-template #simulacionAmountRow>
+        <div class="amount-slider-galatea-amount-row">
+          <div class="amount-slider-galatea-value amount-slider-galatea-value--field"
+               [class.editable]="editable"
+               (click)="onEditValue()">
+            <span *ngIf="!isEditing">{{ formattedValue }},00 {{ unit }}</span>
+            <input *ngIf="isEditing"
+                   type="text"
+                   id="galatea-amount-input"
+                   class="galatea-amount-input galatea-amount-input--field"
+                   [value]="inputValue"
+                   (input)="onInputChange($event)"
+                   (blur)="onInputBlur()"
+                   (focus)="onInputFocus()"
+                   autocomplete="off">
+          </div>
+          <button
+            *ngIf="showClear"
+            type="button"
+            class="amount-slider-galatea-clear"
+            (click)="onClearClick(); $event.stopPropagation()"
+            aria-label="Restablecer importe al mínimo">
+            <i data-lucide="x" class="amount-slider-galatea-clear-icon"></i>
+          </button>
+        </div>
+      </ng-template>
+    </div>
+  </ng-container>
+
+  <ng-template #galateaLegacyHeader>
+    <div class="amount-slider-galatea-header">
+      <div class="header-right">
+        <div class="amount-slider-galatea-value"
+             [class.editable]="editable"
+             (click)="onEditValue()">
+          <span *ngIf="!isEditing">{{ formattedValue }} {{ unit }}</span>
+          <input *ngIf="isEditing"
+                 type="text"
+                 id="galatea-amount-input-legacy"
+                 class="galatea-amount-input"
+                 [value]="inputValue"
+                 (input)="onInputChange($event)"
+                 (blur)="onInputBlur()"
+                 (focus)="onInputFocus()"
+                 autocomplete="off">
+          <i data-lucide="pencil" class="pencil-icon" *ngIf="editable && !isEditing"></i>
+        </div>
       </div>
     </div>
-  </div>
+  </ng-template>
 
-  <!-- Slider personalizado -->
   <div class="amount-slider-galatea-control">
-    <!-- Slider HTML nativo -->
     <div class="custom-slider-wrapper">
       <input type="range"
              [min]="minValue"
@@ -37,21 +148,17 @@
              [attr.aria-valuemax]="maxValue"
              [attr.aria-valuenow]="value">
     </div>
-    
-    <!-- Min/Max labels debajo del slider -->
+
     <div class="amount-slider-galatea-min-max" *ngIf="showMinMax">
-      <div class="min-label">
-        <span class="label">Mín.</span>
-        <span class="value">{{ minFormatted }} {{ unit }}</span>
-      </div>
-      <div class="max-label">
-        <span class="label">Máx.</span>
-        <span class="value">{{ maxFormatted }} {{ unit }}</span>
-      </div>
+      <span class="amount-slider-galatea-range amount-slider-galatea-range--min">
+        Mín. {{ minFormatted }} {{ unit }}
+      </span>
+      <span class="amount-slider-galatea-range amount-slider-galatea-range--max">
+        Máx. {{ maxFormatted }} {{ unit }}
+      </span>
     </div>
   </div>
 
-  <!-- Mensaje de error -->
   <div class="amount-slider-galatea-error" *ngIf="errorMessage" role="alert">
     <i data-lucide="alert-circle" class="error-icon"></i>
     <span>{{ errorMessage }}</span>

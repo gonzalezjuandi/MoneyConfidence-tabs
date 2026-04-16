@@ -1,4 +1,12 @@
-// Entry point saldo / próximos pagos (pestañas) — V1/V2 comparten componente
+// Hero saldo total + ahorrado/invertido (centrado)
+.pg-balance-section {
+  padding-top: 0.5rem;
+  padding-bottom: 1.5rem;
+  max-width: 24rem;
+  margin-left: auto;
+  margin-right: auto;
+}
+
 .balance-swipe-inner.pg-balance-stack,
 .pg-balance-stack {
   display: flex;
@@ -6,69 +14,6 @@
   align-items: center;
   text-align: center;
   width: 100%;
-}
-
-/* —— Pestañas saldo / próximos (referencia Posición global) —— */
-.pg-balance-tabs {
-  display: flex;
-  width: 100%;
-  max-width: 100%;
-  margin: 0 auto 0.75rem;
-  border-bottom: 1px solid #e5e7eb;
-  gap: 0;
-}
-
-.pg-balance-tab {
-  flex: 1 1 50%;
-  position: relative;
-  padding: 0.5rem 0.35rem 0.65rem;
-  border: none;
-  background: none;
-  cursor: pointer;
-  font: inherit;
-  color: #6b7280;
-  -webkit-tap-highlight-color: transparent;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 0.15rem;
-  min-height: 3.25rem;
-  box-sizing: border-box;
-}
-
-.pg-balance-tab-title {
-  font-size: 0.9375rem;
-  font-weight: 500;
-  line-height: 1.2;
-  color: #6b7280;
-}
-
-.pg-balance-tab--active .pg-balance-tab-title {
-  font-weight: 700;
-  color: #111827;
-}
-
-.pg-balance-tab-hint {
-  font-size: 0.6875rem;
-  line-height: 1.2;
-  color: #9ca3af;
-  font-weight: 400;
-}
-
-.pg-balance-tab--active::after {
-  content: '';
-  position: absolute;
-  left: 8%;
-  right: 8%;
-  bottom: 0;
-  height: 4px;
-  border-radius: 2px 2px 0 0;
-  background: #006dff;
-}
-
-.balance-hero-stage--tabs {
-  margin-top: 0.35rem;
-  min-height: 8rem;
 }
 
 .balance-manage-pill {
@@ -95,15 +40,29 @@
   box-shadow: 0 0 0 2px #ffffff, 0 0 0 4px rgba(0, 109, 255, 0.45);
 }
 
-/* Misma caja tipográfica en saldo total y próximos pagos (sin salto al alternar) */
 .balance-hero-stage {
   display: flex;
   flex-direction: column;
   align-items: center;
+  justify-content: center;
   width: 100%;
-  min-height: 7.75rem;
-  gap: 0.25rem;
+  min-height: 0;
+  gap: 0.5rem;
   box-sizing: border-box;
+}
+
+.balance-hero-stage.balance-hero-stage--solo {
+  gap: 0.5rem;
+}
+
+/* Referencia: título → importe grande → ahorrado/invertido */
+.balance-hero-kicker {
+  margin: 0;
+  font-size: 0.9375rem;
+  line-height: 1.25;
+  font-weight: 400;
+  color: #111827;
+  letter-spacing: -0.01em;
 }
 
 .balance-hero-label {
@@ -116,8 +75,9 @@
 }
 
 .balance-hero-sub {
-  margin-top: 0.25rem;
-  min-height: 2.25rem;
+  margin-top: 0;
+  min-height: 0;
+  padding-top: 0.125rem;
   width: 100%;
   display: flex;
   align-items: center;
@@ -132,22 +92,32 @@
 .balance-hero-ahorrado {
   margin: 0;
   font-size: 0.875rem;
-  line-height: 1.25rem;
+  line-height: 1.35;
   font-weight: 400;
   color: #6b7280;
 }
 
+.balance-hero-ahorrado-label {
+  margin-right: 0.25rem;
+}
+
 .balance-hero-ahorrado-amt {
-  font-weight: 600;
+  font-weight: 700;
   color: #111827;
 }
 
 .balance-hero-numeric {
   margin: 0;
-  min-height: 2.5rem;
-  line-height: 2.5rem;
+  min-height: 0;
   letter-spacing: -0.02em;
   font-variant-numeric: tabular-nums;
+}
+
+.balance-hero-numeric--primary {
+  font-size: 2.25rem;
+  line-height: 1.1;
+  font-weight: 700;
+  color: #111827;
 }
 
 .balance-manage-link {

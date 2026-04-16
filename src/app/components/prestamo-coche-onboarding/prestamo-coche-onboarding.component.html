@@ -18,46 +18,74 @@
       </button>
     </header>
 
-    <!-- Main Content -->
+    <!-- Main Content (bottom sheet referencia) -->
     <main class="onboarding-main" (scroll)="expandDrawer()">
-      <section class="onboarding-section">
-        <h2 class="onboarding-amount-title">Solicita hasta 45.000 €</h2>
+      <section class="onboarding-section onboarding-section--hero">
+        <h2 class="onboarding-amount-title">Solicita hasta 40.000 €</h2>
         <ul class="loan-offer-features">
           <li class="loan-offer-feature">
-            <i data-lucide="check" class="w-5 h-5 stroke-[2]"></i>
+            <i data-lucide="check" class="loan-offer-check"></i>
             <span>Sin necesidad de adjuntar documentación</span>
           </li>
           <li class="loan-offer-feature">
-            <i data-lucide="check" class="w-5 h-5 stroke-[2]"></i>
+            <i data-lucide="check" class="loan-offer-check"></i>
             <span>Tú eliges la cuota mensual</span>
           </li>
           <li class="loan-offer-feature">
-            <i data-lucide="check" class="w-5 h-5 stroke-[2]"></i>
+            <i data-lucide="check" class="loan-offer-check"></i>
             <span>100 % online</span>
           </li>
         </ul>
       </section>
 
-      <section class="process-section">
-        <h3 class="process-title">Conseguir tu préstamo es muy sencillo:</h3>
-        <div class="process-steps-numeric">
-          <div class="process-step-numeric">
-            <span class="process-step-number">1</span>
-            <span class="process-step-text">Personaliza tu préstamo</span>
-          </div>
-          <div class="process-step-numeric">
-            <span class="process-step-number">2</span>
-            <span class="process-step-text">Revisa los detalles</span>
-          </div>
-          <div class="process-step-numeric">
-            <span class="process-step-number">3</span>
-            <span class="process-step-text">Lee la documentación</span>
-          </div>
-          <div class="process-step-numeric">
-            <span class="process-step-number">4</span>
-            <span class="process-step-text">Firma la solicitud</span>
+      <section class="onboarding-accordion-block">
+        <div class="onboarding-accordion-card">
+          <button
+            type="button"
+            class="onboarding-accordion-head"
+            (click)="toggleHowTo()"
+            [attr.aria-expanded]="howToExpanded"
+            aria-controls="onboarding-howto-panel"
+            id="onboarding-howto-label"
+          >
+            <span class="onboarding-accordion-head-title">¿Cómo conseguir tu préstamo?</span>
+            <i data-lucide="chevron-down" class="onboarding-accordion-chevron"></i>
+          </button>
+          <div
+            class="onboarding-accordion-panel"
+            id="onboarding-howto-panel"
+            role="region"
+            aria-labelledby="onboarding-howto-label"
+            *ngIf="howToExpanded"
+          >
+            <ul class="onboarding-step-list">
+              <li class="onboarding-step-item">
+                <i data-lucide="sliders-horizontal" class="onboarding-step-ic"></i>
+                <span class="onboarding-step-label">Personaliza tu préstamo</span>
+              </li>
+              <li class="onboarding-step-item">
+                <i data-lucide="list-checks" class="onboarding-step-ic"></i>
+                <span class="onboarding-step-label">Revisa los detalles</span>
+              </li>
+              <li class="onboarding-step-item">
+                <i data-lucide="files" class="onboarding-step-ic"></i>
+                <span class="onboarding-step-label">Lee la documentación</span>
+              </li>
+              <li class="onboarding-step-item">
+                <i data-lucide="pen-line" class="onboarding-step-ic"></i>
+                <span class="onboarding-step-label">Firma la solicitud</span>
+              </li>
+            </ul>
           </div>
         </div>
+      </section>
+
+      <section class="onboarding-legal">
+        <p class="onboarding-legal-text">
+          Te informamos que podemos tratar los datos personales de los que dispongamos, así como aquellos que nos hayas incorporado en el proceso, para contactarte en caso de que, por cualquier razón, se abandone el proceso con la finalidad de conocer las razones e intentar recuperarlo. Puedes ejercer tus derechos en
+          <a href="#" class="onboarding-legal-inline-link" (click)="$event.preventDefault()">protección de datos</a>
+          conforme a la información que ya te ha sido proporcionada.
+        </p>
       </section>
 
       <section class="onboarding-more-info">
@@ -67,12 +95,6 @@
           (click)="onOpenFaq()">
           Más información
         </button>
-      </section>
-
-      <section class="onboarding-legal">
-        <p class="onboarding-legal-text">
-          Te informamos que podemos tratar los datos personales de los que dispongamos, así como aquellos que nos hayas incorporado en el proceso, para contactarte en caso de que, por cualquier razón, se abandone el proceso con la finalidad de conocer las razones e intentar recuperarlo. Puedes ejercer tus derechos en protección de datos conforme a la información que ya te ha sido proporcionada.
-        </p>
       </section>
     </main>
 

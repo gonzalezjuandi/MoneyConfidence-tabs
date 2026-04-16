@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Output, AfterViewInit } from '@angular/core';
+import { ChangeDetectorRef, Component, EventEmitter, Output, AfterViewInit } from '@angular/core';
 import { PRESTAMO_FAQS, SEGURO_FAQS } from '../../constants/prestamo-coche-faq';
 
 declare var lucide: any;
@@ -9,6 +9,8 @@ declare var lucide: any;
   styleUrls: ['./prestamo-coche-onboarding.component.scss']
 })
 export class PrestamoCocheOnboardingComponent implements AfterViewInit {
+  constructor(private cdr: ChangeDetectorRef) {}
+
   @Output() startSimulation = new EventEmitter<void>();
   @Output() close = new EventEmitter<void>();
   @Output() closeRequested = new EventEmitter<void>();
@@ -19,9 +21,17 @@ export class PrestamoCocheOnboardingComponent implements AfterViewInit {
   expandedSeguroId: number | null = null;
   prestamoFaqs = PRESTAMO_FAQS;
   seguroFaqs = SEGURO_FAQS;
-  drawerExpanded = false;
+  /** Drawer al 75% desde el inicio para ver título + lista + legal sin scroll excesivo */
+  drawerExpanded = true;
+  /** Acordeón cerrado al abrir para dejar hueco al texto legal */
+  howToExpanded = false;
 
   ngAfterViewInit(): void {
+    if (typeof window !== 'undefined' && window.matchMedia('(min-width: 768px)').matches) {
+      this.howToExpanded = true;
+      this.cdr.detectChanges();
+    }
+
     // Asegurar que la pantalla del flujo se muestre siempre desde arriba
     setTimeout(() => {
       if (typeof window !== 'undefined') {
@@ -48,6 +58,14 @@ export class PrestamoCocheOnboardingComponent implements AfterViewInit {
   expandDrawer(): void {
     if (!this.drawerExpanded) {
       this.drawerExpanded = true;
+    }
+  }
+
+  toggleHowTo(): void {
+    this.howToExpanded = !this.howToExpanded;
+    this.expandDrawer();
+    if (typeof lucide !== 'undefined') {
+      setTimeout(() => lucide.createIcons(), 0);
     }
   }
 

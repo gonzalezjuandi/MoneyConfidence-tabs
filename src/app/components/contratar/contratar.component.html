@@ -18,8 +18,11 @@
       <section class="px-5">
         <h1 class="text-lg font-bold text-slate-900 mb-5 tracking-tight">Laura, esto te puede interesar</h1>
         
-        <!-- Préstamo Preconcedido Promo Card -->
-        <div class="prestamo-preconcedido-card" (click)="onIrAPrestamos()">
+        <!-- Préstamo preconcedido (oculto si hubo rechazo por normativa 40% en el flujo de préstamo) -->
+        <div
+          class="prestamo-preconcedido-card"
+          *ngIf="showPreconcedidoCard"
+          (click)="onIrAPrestamos()">
           <div class="prestamo-card-header">
             <div class="prestamo-badge">
               <i data-lucide="zap" class="w-4 h-4"></i>
@@ -29,11 +32,11 @@
               <div class="prestamo-logo-circle">BS</div>
             </div>
           </div>
-          
+
           <div class="prestamo-card-content">
             <h3 class="prestamo-title">Tienes un préstamo disponible</h3>
             <p class="prestamo-subtitle">Hasta 15.000 € aprobados para ti</p>
-            
+
             <div class="prestamo-details">
               <div class="prestamo-detail-item">
                 <span class="prestamo-detail-label">Importe</span>
@@ -49,21 +52,51 @@
               </div>
             </div>
           </div>
-          
+
           <div class="prestamo-card-actions">
-            <button 
+            <button
               type="button"
               class="prestamo-cta-primary"
               (click)="onIrAPrestamos(); $event.stopPropagation()"
             >
               Simular cuota
             </button>
-            <button 
+            <button
               type="button"
               class="prestamo-cta-secondary"
               (click)="onVerDetalles(); $event.stopPropagation()"
             >
               Ver detalles
+            </button>
+          </div>
+        </div>
+
+        <!-- Tarjeta genérica cashback (sustituye al preconcedido tras rechazo normativo) -->
+        <div
+          class="cashback-promo-card"
+          *ngIf="!showPreconcedidoCard"
+          (click)="onCashbackPromoClick()">
+          <div class="cashback-card-header">
+            <div class="cashback-badge">
+              <i data-lucide="wallet" class="w-4 h-4"></i>
+              <span>Cashback</span>
+            </div>
+            <div class="prestamo-logo">
+              <div class="prestamo-logo-circle cashback-logo-circle">BS</div>
+            </div>
+          </div>
+          <div class="cashback-card-body">
+            <h3 class="cashback-title">Recupera dinero con tus compras</h3>
+            <p class="cashback-subtitle">
+              Acumula saldo en tu cuenta cuando pagues con tu tarjeta. Sin complicaciones.
+            </p>
+          </div>
+          <div class="cashback-card-actions">
+            <button
+              type="button"
+              class="cashback-cta"
+              (click)="onCashbackPromoClick(); $event.stopPropagation()">
+              Ver cómo funciona
             </button>
           </div>
         </div>

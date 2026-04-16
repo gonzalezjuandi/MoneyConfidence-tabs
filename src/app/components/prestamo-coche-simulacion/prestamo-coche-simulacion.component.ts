@@ -16,7 +16,10 @@ export class PrestamoCocheSimulacionComponent implements OnInit, AfterViewInit {
 
   constructor(private cdr: ChangeDetectorRef) {}
 
-  // Estado del formulario (inicial al 75% del rango)
+  /** Oculta módulo de seguro y flujos asociados en simulación (reactivar: true). */
+  showInsuranceModule = false;
+
+  // Estado del formulario (referencia captura: Mín. 3.000 € — Máx. 40.000 €)
   minAmount = 3000;
   maxAmount = 40000;
   amount = this.minAmount + Math.round(0.75 * (this.maxAmount - this.minAmount) / 500) * 500;
@@ -312,18 +315,6 @@ export class PrestamoCocheSimulacionComponent implements OnInit, AfterViewInit {
     return this.monthlyPayment.toFixed(2).replace('.', ',');
   }
 
-  clearAmountInput(): void {
-    this.amountInputValue = '';
-    this.amount = this.minAmount;
-    this.updateMonthlyPayment();
-    setTimeout(() => {
-      const input = document.querySelector('.amount-input') as HTMLInputElement;
-      if (input) {
-        input.focus();
-      }
-    }, 0);
-  }
-
   get minFormatted(): string {
     return this.minAmount.toLocaleString('es-ES');
   }
@@ -333,6 +324,26 @@ export class PrestamoCocheSimulacionComponent implements OnInit, AfterViewInit {
   }
 
   onNext(): void {
+    if (!this.showInsuranceModule) {
+      const resumenData: PrestamoCocheResumenData = {
+        amount: this.amount,
+        termMonths: this.termMonths,
+        monthlyPayment: this.monthlyPayment,
+        tin: this.tin,
+        tae: this.tae,
+        openingCommission: 0,
+        totalInterest: this.calculateTotalInterest(),
+        totalToRepay: this.calculateTotalToRepay(),
+        firstPaymentDate: this.getFirstPaymentDate(),
+        hasInsurance: false,
+        medicalConditionDeclared: false,
+        accountNumber: 'Cuenta Online Sabadell •••2930',
+        accountHolder: 'María García Palao'
+      };
+      this.next.emit(resumenData);
+      return;
+    }
+
     // Si tiene seguro activado, mostrar modal médico primero
     if (this.hasInsurance) {
       this.showMedicalModal = true;

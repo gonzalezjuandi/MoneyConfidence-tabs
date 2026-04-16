@@ -1,21 +1,29 @@
 <div class="prestamo-coche-simulacion-container">
   <div class="prestamo-coche-simulacion-wrapper">
-    <!-- Header -->
-    <header class="simulacion-header">
-      <button class="header-back-btn" (click)="onBack()">
-        <i data-lucide="arrow-left" class="w-5 h-5 stroke-[1.5]"></i>
-      </button>
-      <h1 class="header-title">Préstamo Preconcedido</h1>
-      <div class="header-actions">
-        <button class="header-icon-btn" aria-label="Chat" (click)="onOpenFaq()">
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" style="width: 1.5rem; height: 1.5rem;">
-            <path fill-rule="evenodd" clip-rule="evenodd" d="M5.97394 16.3997L4.71817 19.2968L8.10519 18.4877L8.64737 18.7931C9.78922 19.4362 11.1073 19.8036 12.516 19.8036C16.8775 19.8036 20.4131 16.2679 20.4131 11.9064C20.4131 7.54492 16.8775 4.00924 12.516 4.00924C8.15447 4.00924 4.61879 7.54492 4.61879 11.9064C4.61879 13.2914 4.97397 14.5887 5.597 15.7171L5.97394 16.3997ZM2 21.5776L4.20784 16.4841C3.45844 15.1269 3.03193 13.5665 3.03193 11.9064C3.03193 6.66853 7.27808 2.42238 12.516 2.42238C17.7539 2.42238 22 6.66853 22 11.9064C22 17.1443 17.7539 21.3904 12.516 21.3904C10.8275 21.3904 9.24202 20.9492 7.86866 20.1757L2 21.5776Z" fill="currentColor"/>
-            <path d="M15.3142 7.33122C16.1468 8.67695 15.6607 10.261 14.254 11.4516L13.8804 11.776C13.2113 12.3757 12.9958 12.6992 12.9666 13.0614L12.963 13.1529V13.8303H11.6081V13.1529C11.6081 12.1741 12.0641 11.5302 13.3787 10.4175C14.3226 9.61859 14.5923 8.73953 14.162 8.04401C13.7796 7.42575 12.4297 7.26492 11.1814 7.72963L10.9488 7.82413L10.3291 8.0977L9.78194 6.85822L10.4017 6.58466C12.2545 5.76678 14.4752 5.97501 15.3142 7.33122Z" fill="currentColor"/>
-            <path d="M11.2483 16.8772C11.2483 16.316 11.7032 15.861 12.2644 15.861C12.8256 15.861 13.2805 16.316 13.2805 16.8772C13.2805 17.4384 12.8256 17.8933 12.2644 17.8933C11.7032 17.8933 11.2483 17.4384 11.2483 16.8772Z" fill="currentColor"/>
-          </svg>
+    <!-- Header (mismo patrón que resumen: columna izquierda alineada al título centrado) -->
+    <header class="prestamo-wizard-header">
+      <div class="prestamo-wizard-header__start">
+        <div class="prestamo-wizard-header__spacer" aria-hidden="true"></div>
+      </div>
+      <h1 class="prestamo-wizard-header__title">Préstamo Preconcedido</h1>
+      <div class="prestamo-wizard-header__actions">
+        <button type="button" class="prestamo-wizard-header__icon-btn" aria-label="Ayuda" (click)="onOpenFaq()">
+          <img
+            class="prestamo-wizard-header__icon"
+            src="assets/icons/prestamo-ayuda-icon.png"
+            width="26"
+            height="26"
+            alt=""
+            decoding="async" />
         </button>
-        <button class="header-icon-btn" aria-label="Cerrar" (click)="onCloseRequest()">
-          <i data-lucide="x" class="w-5 h-5 stroke-[1.5]"></i>
+        <button type="button" class="prestamo-wizard-header__icon-btn" aria-label="Cerrar" (click)="onCloseRequest()">
+          <img
+            class="prestamo-wizard-header__icon"
+            src="assets/icons/prestamo-cerrar-icon.png"
+            width="26"
+            height="26"
+            alt=""
+            decoding="async" />
         </button>
       </div>
     </header>
@@ -33,10 +41,10 @@
           [step]="500"
           unit="€"
           mainTitle="¿Cuánto dinero necesitas?"
-          inputLabel="Cantidad"
           [showMinMax]="true"
+          [showClear]="true"
           (valueChange)="onAmountChange($event)"
-          class="amount-slider-galatea">
+          class="amount-slider-galatea amount-slider-galatea--simulacion">
         </app-amount-slider-galatea>
       </div>
 
@@ -48,38 +56,47 @@
                   class="term-btn"
                   [class.active]="termMonths === 96"
                   (click)="selectTerm(96)">
-            8 años
+            <span class="term-btn-num">8</span>
+            <span class="term-btn-unit">Años</span>
           </button>
           <button type="button"
                   class="term-btn"
                   [class.active]="termMonths === 70"
                   (click)="selectTerm(70)">
-            7 años
+            <span class="term-btn-num">7</span>
+            <span class="term-btn-unit">Años</span>
           </button>
           <button type="button"
                   class="term-btn"
                   [class.active]="termMonths === 50"
                   (click)="selectTerm(50)">
-            5 años
+            <span class="term-btn-num">5</span>
+            <span class="term-btn-unit">Años</span>
           </button>
           <button type="button"
                   class="term-btn"
                   [class.active]="termMonths === 30"
                   (click)="selectTerm(30)">
-            3 años
+            <span class="term-btn-num">3</span>
+            <span class="term-btn-unit">Años</span>
           </button>
         </div>
       </div>
 
       <!-- Monthly Payment Summary -->
       <div class="payment-summary">
-        <h4 class="payment-summary-title">Cuota mensual personalizada</h4>
-        <div class="payment-summary-amount">{{ formattedMonthlyPayment }} € / mes</div>
-        <div class="payment-summary-rates">TIN {{ tin.toFixed(2) }} % anual TAE {{ tae.toFixed(2) }}%</div>
+        <h4 class="payment-summary-heading">Cuota mensual personalizada</h4>
+        <div class="payment-summary-amount" aria-label="Importe de la cuota mensual">
+          <span class="payment-summary-amount-num">{{ formattedMonthlyPayment }}</span><span class="payment-summary-amount-suffix"> € / mes</span>
+        </div>
+        <div class="payment-summary-rates">
+          <span class="payment-summary-rates-tin">TIN {{ tin.toFixed(2).replace('.', ',') }} % anual</span>
+          <span class="payment-summary-rates-tae">TAE {{ tae.toFixed(2).replace('.', ',') }}%</span>
+        </div>
       </div>
 
       <!-- Importe no múltiplo de 500: titular y body como en múltiplo de 500, luego card de consentimiento -->
-      <div class="form-section" *ngIf="!hasDeclaredMedicalCondition && !amountIsMultipleOf500 && !userAcceptedDataShare">
+      <div class="form-section" *ngIf="showInsuranceModule && !hasDeclaredMedicalCondition && !amountIsMultipleOf500 && !userAcceptedDataShare">
         <div class="insurance-module-container">
           <h3 class="insurance-module-title">Añade un seguro a tu préstamo</h3>
           <p class="insurance-module-description">
@@ -112,7 +129,7 @@
       </div>
 
       <!-- Mini carga del módulo seguro (tras aceptar compartir datos) -->
-      <div class="form-section insurance-loading-section" *ngIf="!hasDeclaredMedicalCondition && !amountIsMultipleOf500 && userAcceptedDataShare && loadingInsuranceQuote">
+      <div class="form-section insurance-loading-section" *ngIf="showInsuranceModule && !hasDeclaredMedicalCondition && !amountIsMultipleOf500 && userAcceptedDataShare && loadingInsuranceQuote">
         <div class="insurance-quote-loading">
           <div class="insurance-quote-spinner"></div>
           <p class="insurance-quote-loading-text">Calculando precio del seguro...</p>
@@ -120,7 +137,7 @@
       </div>
 
       <!-- Insurance Section: check del seguro (múltiplo de 500 o tras aceptar datos) -->
-      <div class="form-section" *ngIf="!hasDeclaredMedicalCondition && (amountIsMultipleOf500 || (userAcceptedDataShare && !loadingInsuranceQuote))">
+      <div class="form-section" *ngIf="showInsuranceModule && !hasDeclaredMedicalCondition && (amountIsMultipleOf500 || (userAcceptedDataShare && !loadingInsuranceQuote))">
         <div class="insurance-module-container">
           <h3 class="insurance-module-title">¿Quieres asegurar tu préstamo?</h3>
           <p class="insurance-module-description">
@@ -149,7 +166,7 @@
       </div>
 
       <!-- Texto legal: solo cuando ha elegido el seguro (Situación 1) -->
-      <div class="form-section insurance-legal-block" *ngIf="!hasDeclaredMedicalCondition && hasInsurance">
+      <div class="form-section insurance-legal-block" *ngIf="showInsuranceModule && !hasDeclaredMedicalCondition && hasInsurance">
         <div class="insurance-legal-row">
           <i data-lucide="info" class="insurance-legal-icon" aria-hidden="true"></i>
           <p class="insurance-legal-text">
@@ -169,7 +186,7 @@
       <button type="button"
               class="simulacion-cta"
               (click)="onNext()">
-        Continuar
+        Ver resumen de tu solicitud
       </button>
     </footer>
 
@@ -192,7 +209,7 @@
     </div>
 
     <!-- Modal médico fullscreen -->
-    <div class="medical-modal-overlay" *ngIf="showMedicalModal">
+    <div class="medical-modal-overlay" *ngIf="showInsuranceModule && showMedicalModal">
       <div class="medical-modal-container">
         <!-- Header -->
         <header class="medical-modal-header">
@@ -243,7 +260,7 @@
     </div>
 
     <!-- Drawer de información del seguro -->
-    <div class="insurance-drawer-overlay" *ngIf="showInsuranceDrawer" (click)="closeInsuranceDrawer()">
+    <div class="insurance-drawer-overlay" *ngIf="showInsuranceModule && showInsuranceDrawer" (click)="closeInsuranceDrawer()">
       <div class="insurance-drawer" (click)="$event.stopPropagation()">
         <!-- Header -->
         <div class="drawer-header">
@@ -332,7 +349,7 @@
         </header>
         <div class="faq-tabs">
           <button type="button" class="faq-tab" [class.faq-tab-active]="faqActiveTab === 'prestamo'" (click)="setFaqTab('prestamo')">Préstamo</button>
-          <button type="button" class="faq-tab" [class.faq-tab-active]="faqActiveTab === 'seguro'" (click)="setFaqTab('seguro')">Seguro</button>
+          <button type="button" class="faq-tab" *ngIf="showInsuranceModule" [class.faq-tab-active]="faqActiveTab === 'seguro'" (click)="setFaqTab('seguro')">Seguro</button>
         </div>
         <div class="faq-content">
           <div class="faq-list" *ngIf="faqActiveTab === 'prestamo'">
@@ -344,7 +361,7 @@
               <div class="faq-item-answer" *ngIf="expandedPrestamoId === i"><p>{{ item.answer }}</p></div>
             </div>
           </div>
-          <div class="faq-list" *ngIf="faqActiveTab === 'seguro'">
+          <div class="faq-list" *ngIf="showInsuranceModule && faqActiveTab === 'seguro'">
             <p class="faq-intro-text">
               La información de esta sección sobre el seguro solo aplica si en tu caso puedes añadir el Seguro Protección Vida capital constante a tu Préstamo Preconcedido online.
             </p>

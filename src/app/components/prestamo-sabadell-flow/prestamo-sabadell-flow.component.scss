@@ -1,0 +1,1986 @@
+@import '../prestamo-coche-wizard-header';
+
+:host {
+  display: flex;
+  flex-direction: column;
+  flex: 1 1 auto;
+  min-height: 0;
+  width: 100%;
+}
+
+/* Alturas: controles de una sola fila (lista, precio vacío, CTAs Sí/No, chips) = 56px (3.5rem) */
+$sabadell-control-row-height: 3.5rem;
+
+/* Contenedor alineado con prestamo-coche-simulacion */
+.sabadell-flow-container {
+  width: 100%;
+  flex: 1 1 auto;
+  min-height: 0;
+  background: #ffffff;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.sabadell-flow-wrapper {
+  position: relative;
+  width: 100%;
+  flex: 1 1 auto;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.sabadell-flow-main {
+  flex: 1 1 auto;
+  min-height: 0;
+  padding: 1.25rem 1.25rem 2rem;
+  max-width: 32rem;
+  margin: 0 auto;
+  width: 100%;
+  box-sizing: border-box;
+  overflow-x: hidden;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior-y: contain;
+}
+
+/* Espacio para el footer fijo (mismo criterio que simulación) */
+.sabadell-flow-main--with-footer {
+  padding-bottom: calc(6rem + env(safe-area-inset-bottom, 0px));
+}
+
+.sabadell-flow-main--sim-with-footer {
+  /* Footer fijo + texto encima del CTA + área segura (evita que la tarjeta de cuota quede tapada) */
+  padding-bottom: calc(11rem + env(safe-area-inset-bottom, 0px));
+  background: #fafafa;
+  flex: 1;
+}
+
+/* —— Simulación paso 1 de 5 —— */
+.sabadell-sim-header-wrap {
+  flex-shrink: 0;
+  background: #ffffff;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+/* Solo fila de título; la barra de progreso va fuera, a ancho completo */
+.prestamo-wizard-header--sabadell-sim {
+  grid-template-columns: 2rem minmax(0, 1fr) auto;
+  align-items: center;
+  column-gap: 0.5rem;
+  padding: 0.75rem 1rem;
+  margin: 0;
+  border-bottom: none;
+}
+
+.sabadell-sim-header-lucide {
+  width: 1.375rem;
+  height: 1.375rem;
+  stroke-width: 2;
+  color: #006dff;
+}
+
+.sabadell-sim-progress {
+  display: flex;
+  gap: 0.35rem;
+  width: 100%;
+  max-width: none;
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+/* Dentro del wrap: segmentos de borde a borde */
+.sabadell-sim-header-wrap .sabadell-sim-progress {
+  padding: 0;
+}
+
+.sabadell-sim-progress-seg {
+  flex: 1;
+  height: 4px;
+  border-radius: 9999px;
+  background: #e5e7eb;
+  transition: background 0.2s ease;
+}
+
+.sabadell-sim-progress-seg--active {
+  background: #0f172a;
+}
+
+.sabadell-sim-meta-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1rem;
+}
+
+.sabadell-sim-meta-step {
+  font-size: 0.8125rem;
+  font-weight: 500;
+  color: #94a3b8;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+}
+
+.sabadell-sim-link-progress {
+  padding: 0;
+  border: none;
+  background: none;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #006dff;
+  cursor: pointer;
+  font-family: inherit;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.sabadell-sim-page-title {
+  margin: 0 0 1.5rem;
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #000000;
+  line-height: 1.2;
+  letter-spacing: -0.01em;
+}
+
+.sabadell-sim-page-title--completar {
+  margin-bottom: 0.5rem;
+}
+
+.sabadell-sim-subsection-title {
+  margin: 0 0 1.25rem;
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: #000000;
+  line-height: 1.3;
+}
+
+.sabadell-sim-hint--field {
+  margin-top: 0.35rem;
+  margin-bottom: 0;
+  font-size: 0.8125rem;
+  color: #94a3b8;
+}
+
+.sabadell-laboral-dropdown {
+  position: relative;
+  z-index: 1;
+}
+
+.sabadell-laboral-panel-profesion {
+  display: flex;
+  flex-direction: column;
+  max-height: 18rem;
+  padding-top: 0;
+  overflow: hidden;
+}
+
+.sabadell-laboral-search {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-shrink: 0;
+  padding: 0.5rem 0.75rem;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.sabadell-laboral-search-icon {
+  width: 1.125rem;
+  height: 1.125rem;
+  stroke-width: 2;
+  color: #64748b;
+  flex-shrink: 0;
+}
+
+.sabadell-laboral-search-input {
+  flex: 1;
+  min-width: 0;
+  border: none;
+  outline: none;
+  font-size: 0.9375rem;
+  font-family: inherit;
+  background: transparent;
+}
+
+.sabadell-laboral-prof-list {
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  flex: 1;
+  min-height: 0;
+}
+
+.sabadell-laboral-number-box {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  min-height: $sabadell-control-row-height;
+  padding: 0 1rem;
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 0.75rem;
+  box-sizing: border-box;
+}
+
+.sabadell-laboral-number-input {
+  flex: 1;
+  min-width: 0;
+  border: none;
+  outline: none;
+  font-size: 0.9375rem;
+  font-weight: 600;
+  color: #0f172a;
+  font-family: inherit;
+  background: transparent;
+}
+
+.sabadell-laboral-number-clear {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.5rem;
+  height: 1.5rem;
+  padding: 0;
+  border: none;
+  background: transparent;
+  color: #006dff;
+  cursor: pointer;
+  border-radius: 0.25rem;
+}
+
+.sabadell-laboral-number-clear-icon {
+  width: 1.125rem;
+  height: 1.125rem;
+  stroke-width: 2;
+}
+
+.sabadell-sim-field {
+  margin-bottom: 1.5rem;
+}
+
+/* Listas desplegables: el campo siguiente no debe tapar el panel (mismo patrón que finalidad) */
+.sabadell-flow-main .sabadell-sim-field:has(.sabadell-finalidad-trigger--open) {
+  position: relative;
+  z-index: 300;
+}
+
+.sabadell-sim-label {
+  display: block;
+  font-size: 1rem;
+  font-weight: 700;
+  color: #000000;
+  margin: 0 0 0.5rem;
+  line-height: 1.35;
+}
+
+.sabadell-sim-label--inline {
+  display: inline;
+  margin: 0;
+}
+
+.sabadell-sim-label--grow {
+  flex: 1;
+  min-width: 0;
+  margin-bottom: 0;
+}
+
+.sabadell-sim-label-row {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 0.5rem;
+  margin-bottom: 0.35rem;
+}
+
+.sabadell-sim-info-btn {
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2rem;
+  height: 2rem;
+  margin: 0;
+  padding: 0;
+  border: none;
+  background: transparent;
+  color: #006dff;
+  cursor: pointer;
+  border-radius: 0.375rem;
+  -webkit-tap-highlight-color: transparent;
+
+  &:focus-visible {
+    outline: 2px solid #006dff;
+    outline-offset: 2px;
+  }
+}
+
+.sabadell-sim-info-icon {
+  width: 1.125rem;
+  height: 1.125rem;
+  stroke-width: 2;
+}
+
+.sabadell-sim-subtext {
+  margin: 0 0 0.75rem;
+  font-size: 0.8125rem;
+  color: #64748b;
+  line-height: 1.45;
+}
+
+/* Desplegable finalidad (referencia diseño: lista, check, borde azul abierto) */
+.sabadell-finalidad-dropdown {
+  position: relative;
+  z-index: 25;
+}
+
+.sabadell-finalidad-trigger {
+  width: 100%;
+  min-height: $sabadell-control-row-height;
+  padding: 0 2.75rem 0 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  font-size: 1rem;
+  color: #0f172a;
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 0.75rem;
+  cursor: pointer;
+  font-family: inherit;
+  box-sizing: border-box;
+  text-align: left;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  -webkit-tap-highlight-color: transparent;
+
+  &:focus {
+    outline: none;
+  }
+
+  &:focus-visible {
+    outline: 2px solid #006dff;
+    outline-offset: 2px;
+  }
+}
+
+.sabadell-finalidad-trigger--open {
+  border-color: #006dff;
+  box-shadow: 0 0 0 1px #006dff;
+}
+
+.sabadell-finalidad-trigger-text {
+  flex: 1;
+  min-width: 0;
+}
+
+.sabadell-finalidad-trigger-text--placeholder {
+  color: #94a3b8;
+}
+
+.sabadell-finalidad-trigger-chevron {
+  width: 1.25rem;
+  height: 1.25rem;
+  flex-shrink: 0;
+  stroke-width: 2;
+  color: #64748b;
+}
+
+.sabadell-finalidad-panel {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: calc(100% + 4px);
+  z-index: 2;
+  padding: 0.35rem 0;
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 0.75rem;
+  box-shadow: 0 10px 28px rgba(15, 23, 42, 0.12);
+  max-height: min(320px, 55vh);
+  overflow-y: auto;
+}
+
+.sabadell-finalidad-option {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  width: 100%;
+  padding: 0.75rem 1rem;
+  border: none;
+  background: transparent;
+  font-size: 1rem;
+  color: #0f172a;
+  cursor: pointer;
+  font-family: inherit;
+  text-align: left;
+  transition: background 0.15s ease;
+  -webkit-tap-highlight-color: transparent;
+
+  &:hover,
+  &:focus {
+    background: #f8fafc;
+  }
+
+  &:focus {
+    outline: none;
+  }
+
+  &:focus-visible {
+    outline: 2px solid #006dff;
+    outline-offset: -2px;
+  }
+}
+
+.sabadell-finalidad-option-label {
+  flex: 1;
+}
+
+.sabadell-finalidad-option--selected {
+  font-weight: 700;
+}
+
+.sabadell-finalidad-check {
+  width: 1.125rem;
+  height: 1.125rem;
+  flex-shrink: 0;
+  stroke-width: 2.5;
+  color: #006dff;
+}
+
+/* Precio del bien: vacío = misma altura fila única (56px); relleno = bloque con subetiqueta + valor */
+.sabadell-sim-precio-box {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  flex-shrink: 0;
+  box-sizing: border-box;
+  padding: 0;
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 0.75rem;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+
+  &:focus-within {
+    border-color: #006dff;
+    box-shadow: 0 0 0 3px rgba(0, 109, 255, 0.12);
+  }
+}
+
+.sabadell-sim-precio-box.sabadell-sim-precio-box--empty {
+  justify-content: center;
+  align-items: stretch;
+  gap: 0;
+  height: $sabadell-control-row-height;
+  min-height: $sabadell-control-row-height;
+  max-height: $sabadell-control-row-height;
+  padding: 0 1rem;
+}
+
+.sabadell-sim-precio-box.sabadell-sim-precio-box--filled {
+  justify-content: flex-start;
+  gap: 0;
+  min-height: 0;
+  height: auto;
+  max-height: none;
+  padding: 1rem 1rem 1.125rem;
+}
+
+.sabadell-sim-precio-field-stack {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  width: 100%;
+  min-width: 0;
+}
+
+.sabadell-sim-precio-box--empty .sabadell-sim-precio-field-stack {
+  flex: 1;
+  min-height: 0;
+  align-self: stretch;
+}
+
+.sabadell-sim-precio-box--empty .sabadell-sim-precio-field-stack-main {
+  justify-content: center;
+  min-height: 100%;
+}
+
+.sabadell-sim-precio-field-stack-main {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 0;
+}
+
+.sabadell-sim-precio-box-top--label-only {
+  justify-content: flex-start;
+}
+
+.sabadell-sim-precio-clear--trail {
+  align-self: center;
+  flex-shrink: 0;
+}
+
+.sabadell-sim-precio-box-top {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  flex-shrink: 0;
+  min-height: 1.25rem;
+}
+
+.sabadell-sim-precio-sublabel {
+  font-size: 0.75rem;
+  font-weight: 500;
+  line-height: 1.35;
+  color: #64748b;
+}
+
+.sabadell-sim-precio-clear {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.5rem;
+  height: 1.5rem;
+  margin: 0;
+  padding: 0;
+  border: none;
+  background: transparent;
+  color: #006dff;
+  cursor: pointer;
+  border-radius: 0.25rem;
+  flex-shrink: 0;
+  -webkit-tap-highlight-color: transparent;
+
+  &:hover {
+    background: rgba(0, 109, 255, 0.08);
+  }
+
+  &:focus-visible {
+    outline: 2px solid #006dff;
+    outline-offset: 2px;
+  }
+}
+
+.sabadell-sim-precio-clear-icon {
+  width: 1.125rem;
+  height: 1.125rem;
+  stroke-width: 2;
+}
+
+.sabadell-sim-precio-input {
+  width: 100%;
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+  font-size: 1rem;
+  font-weight: 400;
+  line-height: 1.4;
+  color: #0f172a;
+  background: transparent;
+  border: none;
+  border-radius: 0;
+  font-family: inherit;
+  box-sizing: border-box;
+  flex: 0 0 auto;
+
+  &::placeholder {
+    color: #0f172a;
+    opacity: 1;
+    font-weight: 400;
+  }
+
+  &--filled {
+    font-size: 1.125rem;
+    font-weight: 600;
+    line-height: 1.35;
+
+    &::placeholder {
+      color: #94a3b8;
+      opacity: 1;
+    }
+  }
+
+  &:focus {
+    outline: none;
+  }
+}
+
+.sabadell-sim-precio-box--empty .sabadell-sim-precio-input:not(.sabadell-sim-precio-input--filled) {
+  min-height: 0;
+  line-height: 1.25;
+}
+
+.sabadell-sim-input {
+  width: 100%;
+  min-height: 3rem;
+  padding: 0.75rem 1rem;
+  font-size: 1rem;
+  color: #0f172a;
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 0.75rem;
+  font-family: inherit;
+  box-sizing: border-box;
+
+  &::placeholder {
+    color: #94a3b8;
+  }
+
+  &:focus {
+    outline: none;
+    border-color: #006dff;
+    box-shadow: 0 0 0 3px rgba(0, 109, 255, 0.12);
+  }
+}
+
+.sabadell-sim-hint {
+  margin: 0.5rem 0 0;
+  font-size: 0.75rem;
+  color: #64748b;
+  line-height: 1.45;
+}
+
+.sabadell-sim-yesno {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.75rem;
+}
+
+.sabadell-sim-yesno-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: $sabadell-control-row-height;
+  padding: 0 1rem;
+  font-size: 1rem;
+  font-weight: 600;
+  color: #0f172a;
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 0.75rem;
+  cursor: pointer;
+  font-family: inherit;
+  box-sizing: border-box;
+  transition: border-color 0.2s ease, background 0.2s ease;
+  -webkit-tap-highlight-color: transparent;
+
+  &:hover {
+    border-color: #cbd5e1;
+  }
+}
+
+.sabadell-sim-yesno-btn--active {
+  border-color: #006dff;
+  background: rgba(0, 109, 255, 0.06);
+  color: #006dff;
+}
+
+.sabadell-sim-field--cotitular {
+  margin-top: 1.25rem;
+  padding-top: 1.25rem;
+  border-top: 1px solid #f1f5f9;
+}
+
+.sabadell-sim-cotitular-title {
+  margin: 0 0 0.75rem;
+  font-size: 1rem;
+  font-weight: 700;
+  color: #000000;
+  line-height: 1.35;
+}
+
+.sabadell-sim-cotitular-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.sabadell-sim-cotitular-btn {
+  width: 100%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: $sabadell-control-row-height;
+  padding: 0 1rem;
+  font-size: 1rem;
+  font-weight: 600;
+  color: #0f172a;
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 0.75rem;
+  cursor: pointer;
+  font-family: inherit;
+  box-sizing: border-box;
+  text-align: center;
+  transition: border-color 0.2s ease, background 0.2s ease;
+  -webkit-tap-highlight-color: transparent;
+
+  &:hover {
+    border-color: #cbd5e1;
+  }
+}
+
+.sabadell-sim-cotitular-btn--active {
+  border-color: #006dff;
+  background: rgba(0, 109, 255, 0.06);
+  color: #006dff;
+}
+
+/* Bottom sheet información préstamo compartido */
+.sabadell-compartido-info-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 220;
+  background: rgba(15, 23, 42, 0.45);
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  padding: 0;
+}
+
+.sabadell-compartido-info-sheet {
+  width: 100%;
+  max-width: 32rem;
+  max-height: 90vh;
+  display: flex;
+  flex-direction: column;
+  background: #ffffff;
+  border-radius: 1rem 1rem 0 0;
+  box-shadow: 0 -8px 32px rgba(15, 23, 42, 0.12);
+  padding: 0.5rem 0 0;
+  box-sizing: border-box;
+}
+
+.sabadell-compartido-info-handle {
+  width: 2.25rem;
+  height: 0.25rem;
+  border-radius: 9999px;
+  background: #e2e8f0;
+  margin: 0 auto 0.5rem;
+}
+
+.sabadell-compartido-info-head {
+  display: flex;
+  justify-content: flex-end;
+  padding: 0 0.75rem 0.25rem;
+  flex-shrink: 0;
+}
+
+.sabadell-compartido-info-close {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.5rem;
+  height: 2.5rem;
+  padding: 0;
+  border: none;
+  background: transparent;
+  color: #006dff;
+  cursor: pointer;
+  border-radius: 0.5rem;
+  -webkit-tap-highlight-color: transparent;
+
+  &:focus-visible {
+    outline: 2px solid #006dff;
+    outline-offset: 2px;
+  }
+}
+
+.sabadell-compartido-info-close-icon {
+  width: 1.5rem;
+  height: 1.5rem;
+  stroke-width: 2;
+}
+
+.sabadell-compartido-info-body {
+  overflow-y: auto;
+  padding: 0 1.25rem calc(1.5rem + env(safe-area-inset-bottom, 0px));
+  -webkit-overflow-scrolling: touch;
+}
+
+.sabadell-compartido-info-title {
+  margin: 0 0 1rem;
+  font-size: 1.125rem;
+  font-weight: 700;
+  color: #000000;
+  line-height: 1.3;
+}
+
+.sabadell-compartido-info-p {
+  margin: 0 0 0.875rem;
+  font-size: 0.9375rem;
+  color: #334155;
+  line-height: 1.5;
+}
+
+.sabadell-compartido-info-subtitle {
+  margin: 1rem 0 0.5rem;
+  font-size: 0.9375rem;
+  font-weight: 700;
+  color: #000000;
+  line-height: 1.4;
+}
+
+.sabadell-compartido-info-list {
+  margin: 0;
+  padding-left: 1.15rem;
+  font-size: 0.9375rem;
+  color: #334155;
+  line-height: 1.5;
+}
+
+.sabadell-compartido-info-list li {
+  margin-bottom: 0.35rem;
+}
+
+.sabadell-progress-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 200;
+  background: rgba(15, 23, 42, 0.45);
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  padding: 0;
+}
+
+.sabadell-progress-sheet {
+  width: 100%;
+  max-width: 32rem;
+  max-height: 85vh;
+  overflow-y: auto;
+  background: #ffffff;
+  border-radius: 1rem 1rem 0 0;
+  padding: 1.25rem 1.25rem calc(1.25rem + env(safe-area-inset-bottom, 0px));
+  box-shadow: 0 -8px 32px rgba(15, 23, 42, 0.12);
+}
+
+.sabadell-progress-title {
+  margin: 0 0 1rem;
+  font-size: 1.125rem;
+  font-weight: 700;
+  color: #0f172a;
+}
+
+.sabadell-progress-list {
+  margin: 0 0 1.25rem;
+  padding: 0 0 0 3rem;
+  list-style: decimal;
+  color: #475569;
+  font-size: 0.9375rem;
+  line-height: 1.6;
+}
+
+.sabadell-progress-item {
+  margin-bottom: 0.35rem;
+}
+
+.sabadell-progress-item--current {
+  font-weight: 700;
+  color: #006dff;
+}
+
+.sabadell-progress-item--done {
+  color: #94a3b8;
+}
+
+.sabadell-progress-close {
+  width: 100%;
+  padding: 0.875rem;
+  font-size: 1rem;
+  font-weight: 600;
+  color: #006dff;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 0.75rem;
+  cursor: pointer;
+  font-family: inherit;
+}
+
+.sabadell-flow-section-title {
+  margin: 0 0 1rem;
+  font-size: 1.125rem;
+  font-weight: 700;
+  color: #0f172a;
+  line-height: 1.3;
+}
+
+.sabadell-flow-steps {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.sabadell-flow-step {
+  display: flex;
+  gap: 0.875rem;
+  align-items: flex-start;
+}
+
+.sabadell-flow-step-icon {
+  flex-shrink: 0;
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: 9999px;
+  background: #fafafa;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #006dff;
+}
+
+.sabadell-flow-step-lucide {
+  width: 1.25rem;
+  height: 1.25rem;
+  stroke-width: 1.75;
+}
+
+.sabadell-flow-step-title {
+  margin: 0 0 0.2rem;
+  font-size: 0.9375rem;
+  font-weight: 600;
+  color: #0f172a;
+}
+
+.sabadell-flow-step-text {
+  margin: 0;
+  font-size: 0.875rem;
+  color: #64748b;
+  line-height: 1.45;
+}
+
+.sabadell-flow-cta-block {
+  margin-top: 1.75rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid #f1f5f9;
+}
+
+.sabadell-flow-cta-lead {
+  margin: 0 0 0.75rem;
+  font-size: 0.9375rem;
+  font-weight: 600;
+  color: #0f172a;
+  line-height: 1.45;
+}
+
+.sabadell-flow-cta-note {
+  margin: 0;
+  font-size: 0.8125rem;
+  color: #64748b;
+  line-height: 1.45;
+}
+
+/* Footer fijo y CTA primario (mismas reglas que prestamo-coche-simulacion) */
+.simulacion-footer {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  width: 100%;
+  padding: 1rem 1.25rem calc(1rem + env(safe-area-inset-bottom, 0px));
+  background: #ffffff;
+  border-top: 1px solid #e2e8f0;
+  box-shadow: 0 -4px 16px rgba(15, 23, 42, 0.06);
+  z-index: 100;
+}
+
+.simulacion-cta {
+  width: 100%;
+  padding: 1rem;
+  background: var(--bs-color-primary, #006dff);
+  color: var(--bs-color-on-primary, #ffffff);
+  border: none;
+  border-radius: 9999px;
+  font-size: 1rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+  font-family: var(--bs-font-family-base, inherit);
+
+  &:hover {
+    background: var(--bs-color-primary-dark, #0058e6);
+  }
+
+  &:active {
+    background: var(--bs-color-primary-darker, #0047cc);
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--bs-color-primary, #006dff);
+    outline-offset: 2px;
+  }
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    background: rgba(0, 109, 255, 0.35);
+    color: rgba(255, 255, 255, 0.95);
+  }
+
+  &:disabled:hover,
+  &:disabled:active {
+    background: rgba(0, 109, 255, 0.35);
+  }
+}
+
+.sabadell-flow-faq {
+  margin-top: 2rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid #f1f5f9;
+}
+
+.sabadell-flow-faq-heading {
+  margin: 0 0 1rem;
+  font-size: 1rem;
+  font-weight: 700;
+  color: #0f172a;
+  line-height: 1.35;
+}
+
+.sabadell-flow-faq-item {
+  border: 1px solid #e5e7eb;
+  border-radius: 0.75rem;
+  margin-bottom: 0.5rem;
+  overflow: hidden;
+  background: #fafafa;
+}
+
+.sabadell-flow-faq-trigger {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  padding: 0.875rem 1rem;
+  text-align: left;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  font: inherit;
+  color: #0f172a;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.sabadell-flow-faq-q {
+  font-size: 0.875rem;
+  font-weight: 600;
+  line-height: 1.4;
+}
+
+.sabadell-flow-faq-chevron {
+  width: 1.125rem;
+  height: 1.125rem;
+  flex-shrink: 0;
+  stroke-width: 2;
+  transition: transform 0.2s ease;
+  color: #64748b;
+}
+
+.sabadell-flow-faq-chevron--open {
+  transform: rotate(180deg);
+}
+
+.sabadell-flow-faq-panel {
+  padding: 0 1rem 1rem;
+}
+
+.sabadell-flow-faq-bullets {
+  margin: 0;
+  padding-left: 1.15rem;
+  font-size: 0.8125rem;
+  color: #475569;
+  line-height: 1.5;
+}
+
+.sabadell-flow-faq-bullets li {
+  margin-bottom: 0.35rem;
+}
+
+.sabadell-flow-faq-answer {
+  margin: 0;
+  font-size: 0.8125rem;
+  color: #475569;
+  line-height: 1.5;
+}
+
+.sabadell-flow-btn-outline {
+  width: 100%;
+  margin-top: 1rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.35rem;
+  padding: 0.75rem 1rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #006dff;
+  background: #ffffff;
+  border: 1.5px solid #006dff;
+  border-radius: 0.75rem;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.sabadell-flow-plus {
+  width: 1rem;
+  height: 1rem;
+  stroke-width: 2.5;
+}
+
+.sabadell-flow-main--placeholder {
+  text-align: left;
+}
+
+.sabadell-flow-placeholder-kicker {
+  margin: 0 0 0.5rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: #64748b;
+}
+
+.sabadell-flow-placeholder-title {
+  margin: 0 0 0.75rem;
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: #0f172a;
+}
+
+.sabadell-flow-placeholder-text {
+  margin: 0;
+  font-size: 0.9375rem;
+  color: #64748b;
+  line-height: 1.5;
+}
+
+/* —— Simulador (sliders + cuota) —— */
+.sabadell-simulador {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  width: 100%;
+  min-width: 0;
+}
+
+.sabadell-sim-link-secondary {
+  align-self: flex-start;
+  margin: -0.25rem 0 0;
+  padding: 0;
+  border: none;
+  background: none;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #006dff;
+  cursor: pointer;
+  font-family: inherit;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.sabadell-sim-term {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  width: 100%;
+}
+
+.sabadell-sim-term-heading {
+  margin: 0;
+  font-size: 1.125rem;
+  font-weight: 600;
+  line-height: 1.5;
+  color: #000000;
+}
+
+/* Misma altura total que app-amount-slider-galatea compact56 (56px border-box) */
+.sabadell-sim-term-field {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  width: 100%;
+  height: $sabadell-control-row-height;
+  min-height: $sabadell-control-row-height;
+  max-height: $sabadell-control-row-height;
+  padding: 0 1rem;
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 0.75rem;
+  box-sizing: border-box;
+  justify-content: center;
+}
+
+.sabadell-sim-term-field-stack {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  width: 100%;
+  min-width: 0;
+  flex: 1;
+  min-height: 0;
+}
+
+.sabadell-sim-term-field-stack-main {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 0;
+}
+
+.sabadell-sim-term-field-top--label-only {
+  justify-content: flex-start;
+}
+
+.sabadell-sim-term-clear--trail {
+  align-self: center;
+  flex-shrink: 0;
+}
+
+.sabadell-sim-term-field-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+}
+
+.sabadell-sim-term-label {
+  font-size: 0.75rem;
+  font-weight: 500;
+  line-height: 1;
+  color: #64748b;
+}
+
+.sabadell-sim-term-clear {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.5rem;
+  height: 1.5rem;
+  margin: 0;
+  padding: 0;
+  border: none;
+  background: transparent;
+  color: #006dff;
+  cursor: pointer;
+  border-radius: 0.25rem;
+}
+
+.sabadell-sim-term-clear-icon {
+  width: 1.125rem;
+  height: 1.125rem;
+  stroke-width: 2;
+}
+
+.sabadell-sim-term-value {
+  margin: 0;
+  padding: 0;
+  font-size: 0.9375rem;
+  font-weight: 600;
+  line-height: 1.15;
+  color: #0f172a;
+}
+
+.sabadell-sim-term-control {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  width: 100%;
+}
+
+.sabadell-sim-term-slider-wrap {
+  width: 100%;
+  position: relative;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  min-height: 24px;
+
+  &::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: #cbd5e1;
+    border-radius: 2px;
+    transform: translateY(-50%);
+    z-index: 1;
+  }
+
+  &::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 0;
+    height: 4px;
+    background: #006dff;
+    border-radius: 2px;
+    transform: translateY(-50%);
+    z-index: 2;
+    width: var(--progress, 0%);
+    transition: width 0.1s ease;
+  }
+}
+
+.sabadell-sim-term-slider {
+  width: 100%;
+  height: 24px;
+  border-radius: 2px;
+  background: transparent;
+  outline: none;
+  -webkit-appearance: none;
+  appearance: none;
+  position: relative;
+  z-index: 3;
+  cursor: pointer;
+  margin: 0;
+  padding: 0;
+
+  &::-webkit-slider-runnable-track {
+    width: 100%;
+    height: 4px;
+    border-radius: 2px;
+    background: transparent;
+  }
+
+  &::-moz-range-track {
+    width: 100%;
+    height: 4px;
+    border-radius: 2px;
+    background: transparent;
+  }
+
+  &::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    background: #006dff;
+    cursor: pointer;
+    border: 2px solid #ffffff;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+    margin-top: -10px;
+    position: relative;
+    z-index: 4;
+  }
+
+  &::-moz-range-thumb {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    background: #006dff;
+    cursor: pointer;
+    border: 2px solid #ffffff;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+    z-index: 4;
+  }
+}
+
+.sabadell-sim-term-minmax {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.8125rem;
+  color: #64748b;
+}
+
+.sabadell-sim-cuota-card {
+  margin-top: 0.25rem;
+  padding: 1.25rem 1rem;
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 0.75rem;
+  box-sizing: border-box;
+}
+
+.sabadell-sim-cuota-card-head {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  margin-bottom: 0.75rem;
+}
+
+.sabadell-sim-cuota-card-title {
+  margin: 0;
+  font-size: 1rem;
+  font-weight: 700;
+  color: #0f172a;
+}
+
+.sabadell-sim-cuota-card-sub {
+  font-size: 0.8125rem;
+  color: #64748b;
+}
+
+.sabadell-sim-cuota-main {
+  margin: 0 0 0.5rem;
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #0f172a;
+  letter-spacing: -0.02em;
+}
+
+.sabadell-sim-cuota-rates {
+  margin: 0 0 0.75rem;
+  font-size: 0.8125rem;
+  color: #64748b;
+  line-height: 1.4;
+}
+
+.sabadell-sim-cuota-badge {
+  display: inline-block;
+  margin: 0 0 0.75rem;
+  padding: 0.35rem 0.65rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #166534;
+  background: #dcfce7;
+  border-radius: 9999px;
+}
+
+.sabadell-sim-cuota-legal {
+  margin: 0 0 1rem;
+  font-size: 0.75rem;
+  color: #94a3b8;
+  line-height: 1.45;
+}
+
+.sabadell-sim-cuota-divider {
+  height: 1px;
+  background: #e2e8f0;
+  margin: 0 0 1rem;
+}
+
+.sabadell-sim-cuota-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.75rem 1rem;
+}
+
+.sabadell-sim-cuota-cell {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+  min-width: 0;
+}
+
+.sabadell-sim-cuota-k {
+  font-size: 0.6875rem;
+  font-weight: 500;
+  color: #94a3b8;
+  line-height: 1.3;
+}
+
+.sabadell-sim-cuota-v {
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: #0f172a;
+  word-break: break-word;
+}
+
+/* Toast compacto tras ver la oferta estimada (sobre el CTA Continuar) */
+.sabadell-sim-oferta-toast {
+  position: fixed;
+  left: 50%;
+  bottom: calc(5.25rem + env(safe-area-inset-bottom, 0px));
+  z-index: 120;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  max-width: min(22rem, calc(100vw - 2rem));
+  padding: 0.5rem 0.85rem;
+  border-radius: 9999px;
+  background: rgba(15, 23, 42, 0.92);
+  color: #ffffff;
+  font-size: 0.8125rem;
+  font-weight: 500;
+  line-height: 1.25;
+  letter-spacing: 0.01em;
+  box-shadow: 0 8px 32px rgba(15, 23, 42, 0.28);
+  pointer-events: none;
+  transform: translateX(-50%);
+  animation: sabadell-sim-oferta-toast-in 0.38s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+@keyframes sabadell-sim-oferta-toast-in {
+  from {
+    opacity: 0;
+    transform: translate(-50%, 10px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translate(-50%, 0);
+  }
+}
+
+.sabadell-sim-oferta-toast-icon {
+  width: 1rem;
+  height: 1rem;
+  flex-shrink: 0;
+  stroke-width: 2;
+  opacity: 0.95;
+}
+
+.sabadell-sim-oferta-toast-text {
+  flex: 1;
+  min-width: 0;
+}
+
+/* --- Documento previo (spinner → visor) tras Continuar en simulador --- */
+.sabadell-doc-flow-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 5000;
+  display: flex;
+  flex-direction: column;
+  background: #ffffff;
+}
+
+.sabadell-doc-flow-overlay--spinner {
+  align-items: center;
+  justify-content: center;
+  padding: 1.5rem;
+  animation: sabadell-doc-fade-in 0.25s ease;
+}
+
+.sabadell-doc-spinner-box {
+  max-width: 22rem;
+  width: 100%;
+  text-align: center;
+}
+
+.sabadell-doc-spinner-ring {
+  width: 3.75rem;
+  height: 3.75rem;
+  margin: 0 auto 1.5rem;
+  color: var(--bs-color-primary, #006dff);
+}
+
+.sabadell-doc-spinner-svg {
+  width: 100%;
+  height: 100%;
+  animation: sabadell-doc-spin 1s linear infinite;
+}
+
+.sabadell-doc-spinner-path {
+  stroke-dasharray: 90, 150;
+  stroke-dashoffset: 0;
+  animation: sabadell-doc-dash 1.5s ease-in-out infinite;
+}
+
+@keyframes sabadell-doc-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes sabadell-doc-dash {
+  0% {
+    stroke-dasharray: 1, 150;
+    stroke-dashoffset: 0;
+  }
+  50% {
+    stroke-dasharray: 90, 150;
+    stroke-dashoffset: -35;
+  }
+  100% {
+    stroke-dasharray: 90, 150;
+    stroke-dashoffset: -124;
+  }
+}
+
+@keyframes sabadell-doc-fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.sabadell-doc-spinner-title {
+  margin: 0 0 0.75rem;
+  font-size: 1.125rem;
+  font-weight: 700;
+  color: #0f172a;
+  line-height: 1.35;
+}
+
+.sabadell-doc-spinner-sub {
+  margin: 0;
+  font-size: 0.9375rem;
+  color: #94a3b8;
+  line-height: 1.45;
+}
+
+.sabadell-accelerator-overlay {
+  z-index: 5001;
+}
+
+.sabadell-accelerator-box {
+  max-width: 22rem;
+  width: 100%;
+  text-align: center;
+  padding: 0 1rem;
+}
+
+.sabadell-accelerator-title {
+  margin: 0 0 0.75rem;
+  font-size: 1.125rem;
+  font-weight: 700;
+  color: #0f172a;
+  line-height: 1.35;
+}
+
+.sabadell-accelerator-body {
+  margin: 0 0 1rem;
+  font-size: 0.9375rem;
+  font-weight: 400;
+  color: #0f172a;
+  line-height: 1.45;
+}
+
+.sabadell-accelerator-time {
+  margin: 0;
+  font-size: 0.9375rem;
+  font-weight: 700;
+  color: #0f172a;
+  line-height: 1.4;
+}
+
+/* Intersticial entre datos laborales / familiares / vivienda / económicos */
+.sabadell-datos-interstitial-overlay {
+  z-index: 5002;
+}
+
+.sabadell-datos-interstitial-box {
+  max-width: 22rem;
+  width: 100%;
+  text-align: center;
+  padding: 0 1rem;
+}
+
+.sabadell-datos-interstitial-slide {
+  animation: sabadell-datos-interstitial-fade 0.4s ease;
+}
+
+.sabadell-datos-interstitial-title {
+  margin: 0 0 0.75rem;
+  font-size: 1.125rem;
+  font-weight: 700;
+  color: #000000;
+  line-height: 1.35;
+}
+
+.sabadell-datos-interstitial-body {
+  margin: 0 0 0.5rem;
+  font-size: 0.9375rem;
+  font-weight: 400;
+  color: #666666;
+  line-height: 1.45;
+}
+
+.sabadell-datos-interstitial-body:last-of-type {
+  margin-bottom: 0.75rem;
+}
+
+.sabadell-datos-interstitial-foot {
+  margin: 0;
+  font-size: 0.9375rem;
+  font-weight: 400;
+  color: #666666;
+  line-height: 1.45;
+}
+
+.sabadell-datos-interstitial-foot strong {
+  font-weight: 700;
+  color: #525252;
+}
+
+@keyframes sabadell-datos-interstitial-fade {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.sabadell-doc-flow-overlay--viewer {
+  padding-top: env(safe-area-inset-top, 0);
+}
+
+.sabadell-doc-viewer-toolbar {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  padding: 0.5rem 0.75rem;
+  border-bottom: 1px solid #e2e8f0;
+  background: #fff;
+}
+
+.sabadell-doc-viewer-toolbar-start {
+  display: flex;
+  align-items: center;
+  gap: 0.15rem;
+}
+
+.sabadell-doc-viewer-tool {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.75rem;
+  height: 2.75rem;
+  padding: 0;
+  border: none;
+  border-radius: 0.5rem;
+  background: transparent;
+  color: #64748b;
+  cursor: pointer;
+
+  &:focus-visible {
+    outline: 2px solid var(--bs-color-primary, #006dff);
+    outline-offset: 2px;
+  }
+}
+
+.sabadell-doc-viewer-tool-icon {
+  width: 1.35rem;
+  height: 1.35rem;
+  stroke-width: 1.75;
+}
+
+.sabadell-doc-viewer-close {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.75rem;
+  height: 2.75rem;
+  margin-left: 0.25rem;
+  padding: 0;
+  border: none;
+  border-radius: 0.5rem;
+  background: transparent;
+  color: var(--bs-color-primary, #006dff);
+  cursor: pointer;
+
+  &:focus-visible {
+    outline: 2px solid var(--bs-color-primary, #006dff);
+    outline-offset: 2px;
+  }
+}
+
+.sabadell-doc-viewer-close-icon {
+  width: 1.75rem;
+  height: 1.75rem;
+  stroke-width: 2;
+}
+
+.sabadell-doc-viewer-main {
+  position: relative;
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.sabadell-doc-scroll {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  padding: 1rem 1.25rem 5rem;
+}
+
+.sabadell-doc-sheet {
+  max-width: 40rem;
+  margin: 0 auto;
+  padding-bottom: 2rem;
+}
+
+.sabadell-doc-brand {
+  margin: 0 0 0.5rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--bs-color-primary, #006dff);
+  letter-spacing: 0.02em;
+}
+
+.sabadell-doc-sheet-title {
+  margin: 0 0 1rem;
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--bs-color-primary, #006dff);
+}
+
+.sabadell-doc-sheet-lead {
+  margin: 0 0 1.25rem;
+  font-size: 0.8125rem;
+  color: #64748b;
+  line-height: 1.5;
+}
+
+.sabadell-doc-section {
+  margin-bottom: 1.25rem;
+
+  p {
+    margin: 0 0 0.75rem;
+    font-size: 0.8125rem;
+    color: #334155;
+    line-height: 1.55;
+  }
+}
+
+.sabadell-doc-section-title {
+  margin: 0 0 0.5rem;
+  font-size: 0.9375rem;
+  font-weight: 700;
+  color: #0f172a;
+}
+
+.sabadell-doc-sheet-end {
+  margin: 1.5rem 0 0;
+  text-align: center;
+  font-size: 0.75rem;
+  color: #94a3b8;
+}
+
+.sabadell-doc-scroll-fab {
+  position: absolute;
+  right: 1rem;
+  bottom: 0.5rem;
+  width: 2.75rem;
+  height: 2.75rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  border-radius: 50%;
+  background: var(--bs-color-primary, #006dff);
+  color: #fff;
+  box-shadow: 0 4px 14px rgba(0, 109, 255, 0.35);
+  cursor: pointer;
+
+  &:focus-visible {
+    outline: 2px solid #0f172a;
+    outline-offset: 2px;
+  }
+}
+
+.sabadell-doc-scroll-fab-icon {
+  width: 1.35rem;
+  height: 1.35rem;
+  stroke-width: 2.5;
+}
+
+.sabadell-doc-viewer-hint {
+  flex-shrink: 0;
+  display: flex;
+  align-items: flex-start;
+  gap: 0.65rem;
+  padding: 0.75rem 1.25rem;
+  background: #f8fafc;
+  border-top: 1px solid #e2e8f0;
+}
+
+.sabadell-doc-viewer-hint-icon {
+  flex-shrink: 0;
+  width: 1.25rem;
+  height: 1.25rem;
+  border-radius: 50%;
+  background: var(--bs-color-primary, #006dff);
+  color: #fff;
+  font-size: 0.6875rem;
+  font-weight: 700;
+  font-style: italic;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+  margin-top: 0.1rem;
+}
+
+.sabadell-doc-viewer-hint-text {
+  margin: 0;
+  font-size: 0.8125rem;
+  color: #475569;
+  line-height: 1.4;
+}
+
+.sabadell-doc-viewer-footer {
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  padding: 1rem 1.25rem calc(1rem + env(safe-area-inset-bottom, 0px));
+  background: #fff;
+  border-top: 1px solid #e2e8f0;
+  box-shadow: 0 -4px 16px rgba(15, 23, 42, 0.06);
+}
+
+.sabadell-doc-viewer-primary {
+  width: 100%;
+  padding: 1rem;
+  border: none;
+  border-radius: 9999px;
+  font-size: 1rem;
+  font-weight: 700;
+  font-family: var(--bs-font-family-base, inherit);
+  background: var(--bs-color-primary, #006dff);
+  color: var(--bs-color-on-primary, #fff);
+  cursor: pointer;
+  transition: opacity 0.2s ease;
+
+  &:disabled {
+    opacity: 0.45;
+    cursor: not-allowed;
+  }
+
+  &:not(:disabled):hover {
+    background: var(--bs-color-primary-dark, #0058e6);
+  }
+
+  &:not(:disabled):focus-visible {
+    outline: 2px solid var(--bs-color-primary, #006dff);
+    outline-offset: 2px;
+  }
+}
+
+.sabadell-doc-viewer-secondary {
+  width: 100%;
+  padding: 1rem;
+  border-radius: 9999px;
+  font-size: 1rem;
+  font-weight: 700;
+  font-family: var(--bs-font-family-base, inherit);
+  background: #fff;
+  color: var(--bs-color-primary, #006dff);
+  border: 1.5px solid var(--bs-color-primary, #006dff);
+  cursor: pointer;
+
+  &:focus-visible {
+    outline: 2px solid var(--bs-color-primary, #006dff);
+    outline-offset: 2px;
+  }
+}

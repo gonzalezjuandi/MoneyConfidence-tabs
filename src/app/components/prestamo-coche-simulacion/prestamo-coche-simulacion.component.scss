@@ -1,3 +1,5 @@
+@import '../prestamo-coche-wizard-header';
+
 .prestamo-coche-simulacion-container {
   width: 100%;
   min-height: 100vh;
@@ -15,74 +17,10 @@
   overflow: visible;
 }
 
-/* Header */
-.simulacion-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 1rem 1.25rem;
-  background: #ffffff;
-  border-bottom: 1px solid #e2e8f0;
-  position: sticky;
-  top: 0;
-  z-index: 10;
-}
-
-.header-back-btn {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 2.5rem;
-  height: 2.5rem;
-  border: none;
-  background: transparent;
-  color: #006DFF;
-  cursor: pointer;
-  border-radius: 0.5rem;
-  transition: background-color 0.2s ease;
-
-  &:hover {
-    background-color: #f1f5f9;
-  }
-}
-
-.header-title {
-  font-size: 1.125rem;
-  font-weight: 600;
-  color: #0f172a;
-  margin: 0;
-  flex: 1;
-  text-align: center;
-}
-
-.header-actions {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-}
-
-.header-icon-btn {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 2.5rem;
-  height: 2.5rem;
-  border: none;
-  background: transparent;
-  color: #006DFF;
-  cursor: pointer;
-  border-radius: 0.5rem;
-  transition: background-color 0.2s ease;
-
-  &:hover {
-    background-color: #f1f5f9;
-  }
-}
-
-/* Main Content */
+/* Main Content (~20px laterales, ritmo vertical uniforme) */
 .simulacion-main {
   flex: 1;
-  padding: 1.5rem 1.25rem;
+  padding: 1.25rem 1.25rem;
   overflow-y: auto;
   padding-bottom: 10rem; /* Espacio para el footer fixed */
 }
@@ -90,20 +28,24 @@
 .simulacion-title {
   font-size: 1.5rem;
   font-weight: 700;
-  color: #0f172a;
-  margin: 0 0 2rem 0;
+  color: #000000;
+  margin: 0 0 1.5rem 0;
+  line-height: 1.2;
+  letter-spacing: -0.01em;
 }
 
 /* Form Sections */
 .form-section {
-  margin-bottom: 2rem;
+  margin-bottom: 1.5rem;
 }
 
+.simulacion-section-heading,
 .form-section-title {
   font-size: 1rem;
-  font-weight: 600;
-  color: #0f172a;
-  margin: 0 0 1rem 0;
+  font-weight: 700;
+  color: #000000;
+  margin: 0 0 0.75rem 0;
+  line-height: 1.35;
 }
 
 /* Amount Input */
@@ -199,62 +141,126 @@
   color: #64748b;
 }
 
-/* Term Buttons */
+/* Term Buttons (tarjetas: número + «Años», ref. diseño) */
 .term-buttons {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 0.5rem;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 0.625rem;
 }
 
 .term-btn {
-  padding: 0.875rem;
-  border: 1px solid #e2e8f0;
-  border-radius: 0.75rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.1875rem;
+  min-height: 4rem;
+  padding: 0.5rem 0.35rem;
+  box-sizing: border-box;
+  /* 2pt de trazo: mismo grosor en todos los estados (transparente si no está activo) */
+  border: 2pt solid transparent;
+  border-radius: 1rem;
   background: #ffffff;
-  color: #0f172a;
-  font-size: 1rem;
-  font-weight: 500;
+  color: #000000;
   cursor: pointer;
-  transition: all 0.2s ease;
+  font-family: inherit;
+  box-shadow: 0 2px 10px rgba(15, 23, 42, 0.07);
+  transition: border-color 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease;
 
-  &:hover {
-    border-color: #cbd5e1;
-    background: #f8fafc;
+  &:hover:not(.active) {
+    box-shadow: 0 3px 14px rgba(15, 23, 42, 0.1);
+    background: #ffffff;
   }
 
   &.active {
-    border-color: #006DFF;
+    border-color: #006dff;
     background: #ffffff;
-    color: #0f172a;
-    font-weight: 600;
+    box-shadow: 0 1px 4px rgba(0, 109, 255, 0.12);
   }
 }
 
-/* Payment Summary */
-.payment-summary {
-  background: #f8fafc;
-  border-radius: 0.75rem;
-  padding: 1.5rem;
-  margin-bottom: 2rem;
+.term-btn-num {
+  font-size: 1.375rem;
+  font-weight: 700;
+  line-height: 1.1;
+  color: #000000;
 }
 
-.payment-summary-title {
-  font-size: 0.875rem;
-  font-weight: 600;
-  color: #0f172a;
-  margin: 0 0 0.5rem 0;
+.term-btn-unit {
+  font-size: 0.8125rem;
+  font-weight: 400;
+  color: #000000;
+  line-height: 1.2;
+  text-transform: none;
+}
+
+.term-btn.active .term-btn-num,
+.term-btn.active .term-btn-unit {
+  color: #000000;
+}
+
+/* Payment Summary (card referencia: radios ~24px, sombra suave, TIN gris / TAE negro) */
+.payment-summary {
+  background: #ffffff;
+  border: 1px solid #e0e0e0;
+  border-radius: 1.5rem;
+  padding: 1.75rem 1.75rem 1.625rem;
+  margin-bottom: 1.5rem;
+  box-shadow: 0 4px 24px rgba(15, 23, 42, 0.06);
+  text-align: left;
+}
+
+.payment-summary-heading {
+  font-size: 1.125rem;
+  font-weight: 700;
+  color: #000000;
+  margin: 0 0 1rem 0;
+  line-height: 1.35;
+  letter-spacing: -0.02em;
 }
 
 .payment-summary-amount {
-  font-size: 1.75rem;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  margin: 0 0 1rem 0;
+  line-height: 1.05;
+}
+
+.payment-summary-amount-num {
+  font-size: clamp(2.25rem, 6vw, 3rem);
   font-weight: 700;
-  color: #0f172a;
-  margin: 0 0 0.5rem 0;
+  color: #000000;
+  letter-spacing: -0.03em;
+}
+
+.payment-summary-amount-suffix {
+  font-size: clamp(2.25rem, 6vw, 3rem);
+  font-weight: 400;
+  color: #000000;
+  letter-spacing: -0.02em;
 }
 
 .payment-summary-rates {
-  font-size: 0.75rem;
-  color: #64748b;
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  justify-content: flex-start;
+  align-items: baseline;
+  column-gap: 0.5rem;
+  row-gap: 0.25rem;
+  font-size: 0.9375rem;
+  line-height: 1.4;
+}
+
+.payment-summary-rates-tin {
+  color: #757575;
+  font-weight: 400;
+}
+
+.payment-summary-rates-tae {
+  color: #000000;
+  font-weight: 600;
 }
 
 /* Insurance Section */
@@ -1112,15 +1118,17 @@ ul.drawer-info-list {
   }
 }
 
-/* Footer sticky sin fondo (transparente) */
+/* Footer fijo (referencia: CTA a ancho completo, barra clara) */
 .simulacion-footer {
   position: fixed;
   bottom: 0;
   left: 0;
   right: 0;
   width: 100%;
-  padding: 1.5rem 1.25rem;
-  background: transparent;
+  padding: 1rem 1.25rem calc(1rem + env(safe-area-inset-bottom, 0px));
+  background: #ffffff;
+  border-top: 1px solid #e2e8f0;
+  box-shadow: 0 -4px 16px rgba(15, 23, 42, 0.06);
   z-index: 100;
 }
 
@@ -1132,7 +1140,7 @@ ul.drawer-info-list {
   border: none;
   border-radius: 9999px;
   font-size: 1rem;
-  font-weight: 600;
+  font-weight: 700;
   cursor: pointer;
   transition: background-color 0.2s ease;
   font-family: var(--bs-font-family-base, inherit);

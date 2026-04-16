@@ -1,3 +1,12 @@
+:host {
+  display: flex;
+  flex-direction: column;
+  flex: 1 1 auto;
+  min-height: 0;
+  width: 100%;
+  align-self: stretch;
+}
+
 // Clase unificada para títulos de sección
 .section-title {
   font-size: 0.875rem;
@@ -38,14 +47,18 @@
 
 .prestamos-container {
   width: 100%;
-  min-height: 100vh;
+  flex: 1 1 auto;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
 }
 
 .prestamos-wrapper {
   position: relative;
   width: 100%;
-  min-height: 100vh;
-  max-height: 100vh;
+  flex: 1 1 auto;
+  min-height: 0;
   overflow-y: auto;
   overflow-x: hidden;
   background: #ffffff;
@@ -61,34 +74,122 @@
   background-color: #ffffff;
   backdrop-filter: blur(12px);
   border-bottom: 1px solid #e5e7eb;
-  padding: 0.75rem 1.25rem;
-  display: flex;
+  padding: 0.65rem 1rem;
+  display: grid;
+  grid-template-columns: 2.5rem minmax(0, 1fr) 2.5rem;
   align-items: center;
-  gap: 1rem;
+  column-gap: 0.5rem;
+  flex-shrink: 0;
 }
 
-.header-back-btn {
-  height: 2.25rem;
-  width: 2.25rem;
-  border-radius: 9999px;
-  border: 1px solid #e5e7eb;
+.prestamos-header-heading {
+  margin: 0;
+  font-size: 1.0625rem;
+  font-weight: 700;
+  color: #0f172a;
+  text-align: center;
+  line-height: 1.25;
+  min-width: 0;
+}
+
+.prestamos-header-back {
+  width: 2.5rem;
+  height: 2.5rem;
+  padding: 0;
+  border: none;
+  border-radius: 0.5rem;
+  background: transparent;
+  color: #006dff;
   display: flex;
   align-items: center;
   justify-content: center;
-  background-color: #f9fafb;
-  color: #9ca3af;
   cursor: pointer;
+  transition: background-color 0.2s ease;
+
+  &:hover {
+    background-color: #f1f5f9;
+  }
+
+  &:focus-visible {
+    outline: 2px solid #006dff;
+    outline-offset: 2px;
+  }
 }
 
-.header-title {
-  font-size: 1rem;
-  font-weight: 700;
-  color: #0f172a;
+.prestamos-header-chevron {
+  width: 1.5rem;
+  height: 1.5rem;
+  stroke-width: 2;
+}
+
+.prestamos-header-trail {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  min-width: 0;
+}
+
+.prestamos-header-chat {
+  width: 2.5rem;
+  height: 2.5rem;
+  padding: 0;
+  border: none;
+  border-radius: 0.5rem;
+  background: transparent;
+  color: #006dff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+
+  &:hover {
+    background-color: #f1f5f9;
+  }
+
+  &:focus-visible {
+    outline: 2px solid #006dff;
+    outline-offset: 2px;
+  }
+}
+
+.prestamos-header-chat-icon {
+  width: 1.375rem;
+  height: 1.375rem;
+  stroke-width: 2;
 }
 
 .prestamos-main {
   flex: 1;
   padding-bottom: 2rem;
+}
+
+.prestamos-main--list {
+  background: #ffffff;
+}
+
+.prestamos-section {
+  padding-left: 1.25rem;
+  padding-right: 1.25rem;
+}
+
+.prestamos-section--online {
+  padding-top: 1.5rem;
+  padding-bottom: 0.5rem;
+}
+
+.prestamos-section--help {
+  padding-top: 2rem;
+  padding-bottom: 1.5rem;
+}
+
+.prestamos-section-title {
+  font-size: 1.125rem;
+  font-weight: 700;
+  color: #0f172a;
+  margin: 0 0 1rem;
+  letter-spacing: -0.02em;
+  line-height: 1.25;
 }
 
 .simulation-main {
@@ -1090,11 +1191,21 @@
   display: flex;
   gap: 1rem;
   align-items: flex-start;
-  transition: border-color 0.2s ease;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
   cursor: pointer;
 }
 
-.loan-card:hover {
+.loan-card--elevated {
+  border-radius: 1.125rem;
+  box-shadow: 0 4px 14px rgba(15, 23, 42, 0.06);
+}
+
+.loan-card--support {
+  cursor: default;
+  align-items: center;
+}
+
+.loan-card:not(.loan-card--support):hover {
   border-color: #cbd5e1;
 }
 
@@ -1117,6 +1228,11 @@
 .loan-card-icon-gray {
   background-color: #f3f4f6;
   color: #4b5563;
+}
+
+.loan-card-icon--large {
+  width: 3.5rem;
+  height: 3.5rem;
 }
 
 .loan-card-content {
@@ -1202,7 +1318,7 @@
 .loan-card-btn-secondary {
   background-color: #ffffff;
   color: #006DFF;
-  border: 1px solid #006DFF;
+  border: 2px solid #006DFF;
 }
 
 .loan-card-btn-secondary:hover {

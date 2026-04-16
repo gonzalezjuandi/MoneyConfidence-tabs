@@ -13,10 +13,11 @@
   position: relative;
   width: 100%;
   max-width: 480px;
-  height: 50vh;
+  height: 75vh;
+  max-height: 75vh;
   background: #ffffff;
-  border-radius: 1.25rem 1.25rem 0 0;
-  box-shadow: 0 -12px 30px rgba(15, 23, 42, 0.25);
+  border-radius: 1.5rem 1.5rem 0 0;
+  box-shadow: 0 -8px 32px rgba(15, 23, 42, 0.18);
   display: flex;
   flex-direction: column;
   overflow: hidden;
@@ -24,7 +25,8 @@
   transition: height 0.3s ease-out;
 
   &.drawer-expanded {
-    height: 85vh;
+    height: 75vh;
+    max-height: 75vh;
   }
 }
 
@@ -33,11 +35,12 @@
   top: 0.5rem;
   left: 50%;
   transform: translateX(-50%);
-  width: 3rem;
-  height: 0.25rem;
+  width: 2.5rem;
+  height: 0.2rem;
   border-radius: 9999px;
-  background: rgba(148, 163, 184, 0.8);
+  background: #cbd5e1;
   cursor: pointer;
+  z-index: 2;
 }
 
 @keyframes onboardingDrawerSlideUp {
@@ -51,12 +54,14 @@
   }
 }
 
-/* Header */
+/* Header (cierre alineado referencia) */
 .onboarding-header {
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   justify-content: flex-end;
-  padding: 1rem 1.5rem 0.75rem;
+  flex-shrink: 0;
+  padding: 1.5rem 1.25rem 0.25rem;
+  padding-top: 1.35rem;
 }
 
 .header-title {
@@ -95,22 +100,25 @@
 /* Main Content */
 .onboarding-main {
   flex: 1;
-  padding: 0 1.5rem 1rem;
+  padding: 0 1.25rem 0.75rem;
   overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
 }
 
-.onboarding-section {
-  padding-bottom: 1.25rem;
-  border-bottom: 1px solid #e2e8f0;
-  margin-bottom: 1.25rem;
+.onboarding-section--hero {
+  padding-bottom: 1.125rem;
+  margin-bottom: 1rem;
+  border-bottom: none;
 }
 
 .onboarding-amount-title {
-  font-size: 1.5rem;
+  font-size: 1.375rem;
   font-weight: 700;
   color: #0f172a;
   margin: 0 0 1rem 0;
-  line-height: 1.3;
+  line-height: 1.25;
+  text-align: left;
+  letter-spacing: -0.02em;
 }
 
 .loan-offer-features {
@@ -119,71 +127,128 @@
   margin: 0;
   display: flex;
   flex-direction: column;
-  gap: 0.75rem;
+  gap: 0.625rem;
 }
 
 .loan-offer-feature {
   display: flex;
-  align-items: center;
-  gap: 0.75rem;
-  color: #475569;
+  align-items: flex-start;
+  gap: 0.625rem;
+  color: #0f172a;
   font-size: 0.9375rem;
-  line-height: 1.5;
+  line-height: 1.45;
+  font-weight: 400;
+  text-align: left;
+}
 
-  i {
-    color: #006DFF;
-    flex-shrink: 0;
+.loan-offer-check {
+  width: 1.125rem;
+  height: 1.125rem;
+  flex-shrink: 0;
+  margin-top: 0.15rem;
+  color: #94a3b8;
+  stroke-width: 2px;
+}
+
+/* Tarjeta acordeón «¿Cómo conseguir el préstamo?» (referencia) */
+.onboarding-accordion-block {
+  margin-bottom: 1.25rem;
+}
+
+.onboarding-accordion-card {
+  background: #ffffff;
+  border-radius: 1.25rem;
+  box-shadow: 0 4px 22px rgba(15, 23, 42, 0.09);
+  border: 1px solid rgba(226, 232, 240, 0.85);
+  padding: 1.25rem 1.25rem 1.125rem;
+}
+
+.onboarding-accordion-head {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  padding: 0;
+  margin: 0;
+  text-align: left;
+  font-family: inherit;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+
+  &:focus-visible {
+    outline: 2px solid #006dff;
+    outline-offset: 3px;
+    border-radius: 0.375rem;
   }
 }
 
-/* Process Section */
-.process-section {
-  margin-bottom: 1.75rem;
-}
-
-.process-title {
-  font-size: 1.125rem;
+.onboarding-accordion-head-title {
+  flex: 1;
+  font-size: 1rem;
   font-weight: 700;
   color: #0f172a;
-  margin: 0 0 1.5rem 0;
+  line-height: 1.35;
+  letter-spacing: -0.02em;
 }
 
-.process-steps-numeric {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 1.25rem 1.5rem;
+.onboarding-accordion-chevron {
+  width: 1.25rem;
+  height: 1.25rem;
+  flex-shrink: 0;
+  color: #006dff;
+  stroke-width: 2;
+  transition: transform 0.22s ease;
 }
 
-.process-step-numeric {
+.onboarding-accordion-head[aria-expanded='true'] .onboarding-accordion-chevron {
+  transform: rotate(180deg);
+}
+
+.onboarding-accordion-panel {
+  margin-top: 1.125rem;
+  padding-top: 1.125rem;
+  border-top: 1px solid #f1f5f9;
+}
+
+.onboarding-step-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
   display: flex;
   flex-direction: column;
-  align-items: center;
-  gap: 0.5rem;
-  text-align: center;
+  gap: 1rem;
 }
 
-.process-step-number {
+.onboarding-step-item {
   display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 1.75rem;
-  height: 1.75rem;
-  border-radius: 9999px;
-  background: #f1f5f9;
-  font-size: 0.875rem;
-  font-weight: 600;
+  align-items: flex-start;
+  gap: 0.875rem;
+}
+
+.onboarding-step-ic {
+  width: 1.375rem;
+  height: 1.375rem;
+  flex-shrink: 0;
+  margin-top: 0.1rem;
   color: #0f172a;
+  stroke-width: 1.75;
 }
 
-.process-step-text {
-  font-size: 0.875rem;
-  color: #475569;
-  line-height: 1.4;
+.onboarding-step-label {
+  flex: 1;
+  font-size: 0.9375rem;
+  font-weight: 400;
+  line-height: 1.45;
+  color: #64748b;
+  text-align: left;
 }
 
-/* Más información en contenido */
+/* Más información (enlace secundario centrado) */
 .onboarding-more-info {
-  padding: 0.5rem 0 1.5rem 0;
+  padding: 0.25rem 0 1.25rem;
   text-align: center;
 }
 
@@ -212,23 +277,42 @@
 }
 
 .onboarding-legal {
-  padding-bottom: 1.5rem;
+  padding-bottom: 1rem;
 }
 
 .onboarding-legal-text {
-  font-size: 0.75rem;
+  font-size: 0.6875rem;
   color: #64748b;
-  line-height: 1.5;
+  line-height: 1.55;
   margin: 0;
+  text-align: left;
+}
+
+.onboarding-legal-inline-link {
+  color: #006dff;
+  font-weight: 500;
+  text-decoration: none;
+
+  &:hover {
+    text-decoration: underline;
+  }
+
+  &:focus-visible {
+    outline: 2px solid #006dff;
+    outline-offset: 2px;
+    border-radius: 2px;
+  }
 }
 
 /* Footer sticky dentro del drawer */
 .onboarding-footer {
-  padding: 1rem 1.5rem 1.5rem;
+  padding: 0.75rem 1.25rem calc(1rem + env(safe-area-inset-bottom, 0px));
   background: #ffffff;
   display: flex;
   flex-direction: column;
-  gap: 1rem;
+  gap: 0.75rem;
+  flex-shrink: 0;
+  border-top: 1px solid #f1f5f9;
 }
 
 .onboarding-cta {
@@ -463,4 +547,109 @@
   width: 1.25rem;
   height: 1.25rem;
   flex-shrink: 0;
+}
+
+/* —— Tablet + desktop: modal lateral derecho (~40%), captura referencia —— */
+@media (min-width: 768px) {
+  .prestamo-coche-onboarding-overlay {
+    align-items: stretch;
+    justify-content: flex-end;
+    background: rgba(15, 23, 42, 0.38);
+  }
+
+  .prestamo-coche-onboarding-drawer {
+    width: clamp(260px, 40vw, 560px);
+    max-width: none;
+    height: 100vh;
+    max-height: none;
+    margin: 0;
+    flex-shrink: 0;
+    align-self: stretch;
+    border-radius: 1.25rem 0 0 1.25rem;
+    box-shadow: -12px 0 48px rgba(15, 23, 42, 0.14);
+    animation: onboardingDrawerSlideInRight 0.32s ease-out;
+
+    &.drawer-expanded {
+      height: 100vh;
+      max-height: none;
+    }
+  }
+
+  .prestamo-coche-onboarding-drag-handle {
+    display: none;
+  }
+
+  .onboarding-header {
+    padding: 1.5rem 1.5rem 0.5rem;
+  }
+
+  .onboarding-main {
+    padding: 0 1.5rem 1rem;
+  }
+
+  .onboarding-amount-title {
+    font-size: 1.5rem;
+    line-height: 1.2;
+  }
+
+  .onboarding-accordion-card {
+    border-radius: 1rem;
+    padding: 0.875rem 1rem 1rem;
+  }
+
+  /* Pasos más compactos (misma densidad que móvil): rejilla pequeña + tipografía reducida */
+  .onboarding-accordion-panel {
+    margin-top: 0.625rem;
+    padding-top: 0.625rem;
+  }
+
+  .onboarding-step-list {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.625rem 0.5rem;
+  }
+
+  .onboarding-step-item {
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    text-align: center;
+    gap: 0.25rem;
+  }
+
+  .onboarding-step-ic {
+    width: 1.125rem;
+    height: 1.125rem;
+    margin-top: 0;
+    color: #64748b;
+    stroke-width: 1.75;
+  }
+
+  .onboarding-step-label {
+    text-align: center;
+    font-size: 0.75rem;
+    font-weight: 400;
+    color: #64748b;
+    line-height: 1.35;
+  }
+
+  .onboarding-more-info {
+    text-align: center;
+  }
+
+  .onboarding-footer {
+    padding: 1rem 1.5rem calc(1rem + env(safe-area-inset-bottom, 0px));
+    border-top: 1px solid #e2e8f0;
+  }
+}
+
+@keyframes onboardingDrawerSlideInRight {
+  from {
+    transform: translateX(100%);
+    opacity: 0.96;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
 }
